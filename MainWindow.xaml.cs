@@ -111,9 +111,37 @@ namespace VoiceApp
                             byte[] readBuffer = msg.ReadBytes(size);
                             string player = msg.ReadString();
 
-                            var p = _playbacks[player];
-                            if(p.CanWrite)
-                                p.Write(readBuffer, 0, streamSize);
+                            float x = msg.ReadFloat();
+                            float y = msg.ReadFloat();
+                            float z = msg.ReadFloat();
+
+                            float x1 = msg.ReadFloat();
+                            float y1 = msg.ReadFloat();
+                            float z1 = msg.ReadFloat();
+
+                            Vector3 pos = new Vector3() {X = x, Y = y, Z = z};
+                            Vector3 cam = new Vector3() {X = x1, Y = y1, Z = z1};
+
+                            if (_playbacks.ContainsKey(player))
+                            {
+                                var p = _playbacks[player];
+
+                                //Dispatcher.Invoke(() =>
+                                //{
+                                //    StatusLabel.Text = $"X: {pos.X} Y: {pos.Y} Z: {pos.Z}";
+                                //    //StatusLabel.Text = $"X: {x} Y: {y} Z: {z}";
+                                //});
+
+                                p.Listener.Position = pos;
+                                p.Listener.Orientation = new FragLabs.Audio.Engines.OpenAL.Orientation()
+                                {
+                                    At = cam,
+                                    Up = new Vector3() { X = 0.0f, Y = 1.0f, Z = 0.0f }
+                                };
+
+                                if (p.CanWrite)
+                                    p.Write(readBuffer, 0, streamSize);
+                            }
                         } else if (type == 2)
                         {
                             string name = msg.ReadString();
