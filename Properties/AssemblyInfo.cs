@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VoiceApp")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("RealityVoice")]
+[assembly: AssemblyDescription("OpenSource 3D VoiceChat for GTA 5")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VoiceApp")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCompany("RealityLife")]
+[assembly: AssemblyProduct("RealityVoice")]
+[assembly: AssemblyCopyright("Copyright © Cryma 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
