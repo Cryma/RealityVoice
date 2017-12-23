@@ -1,15 +1,13 @@
-﻿using Lidgren.Network;
+﻿using GrandTheftMultiplayer.Server.API;
+using GrandTheftMultiplayer.Server.Elements;
+using GrandTheftMultiplayer.Shared.Math;
+using Lidgren.Network;
 using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GrandTheftMultiplayer.Server.API;
-using GrandTheftMultiplayer.Server.Elements;
 using System.Threading;
-using GrandTheftMultiplayer.Shared.Math;
+using System.Threading.Tasks;
 
 namespace Server
 {

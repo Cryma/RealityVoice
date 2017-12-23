@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 using FragLabs.Audio.Engines;
 using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 using System.Threading;
+using System.Diagnostics;
 
 namespace RealityVoice
 {
@@ -57,7 +54,7 @@ namespace RealityVoice
 
         public void Start()
         {
-            var config = new NetPeerConfiguration("rl-voice");
+            var config = new NetPeerConfiguration("voice-chat");
 
             _client = new NetClient(config);
             _client.Start();
@@ -79,6 +76,9 @@ namespace RealityVoice
 
             _capture = OpenALHelper.CaptureDevices[0].OpenStream((int)SampleRate, OpenALAudioFormat.Mono16Bit, 10);
             _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
+
+            if (!_updateThread.IsAlive)
+                _updateThread.Start();
         }
 
         public void Disconnect()
@@ -86,54 +86,71 @@ namespace RealityVoice
             if (!IsConnected) return;
 
             _client.Disconnect("");
+            IsConnected = false;
+
+            if (_updateThread.IsAlive)
+            {
+                try
+                {
+                    _updateThread.Join(1000);
+                    if (_updateThread.IsAlive)
+                        _updateThread.Abort();
+                }
+                catch (ThreadAbortException) { }
+                catch(Exception ex)
+                {
+                    Debug.WriteLine($"Error trying to stop update queue: {ex}");
+                }
+            }
         }
 
         public void Update()
         {
-            if (IsConnected)
+            if (!IsConnected)
+                return;
+
+            var message = _client.ReadMessage();
+            if (message != null)
             {
-                var message = _client.ReadMessage();
-
-                if (message != null)
+                if (message.MessageType == NetIncomingMessageType.StatusChanged)
                 {
-                    if (message.MessageType == NetIncomingMessageType.StatusChanged)
-                    {
-                        var netConnection = (NetConnectionStatus)message.ReadByte();
-                        var reason = message.ReadString();
-                        InvokeOnStatusChanged(netConnection, reason);
-                    }
-                    else if (message.MessageType == NetIncomingMessageType.Data)
-                    {
-                        byte type = message.ReadByte();
-                        if (type == 1)
-                        {
-                            int size = message.ReadInt32();
-                            byte[] readBuffer = message.ReadBytes(size);
-                            string name = message.ReadString();
-
-                            var player = Players.Find(p => p.Name == name);
-                            if (player == null) return;
-
-                            var position = message.ReadPositionFromMessage();
-                            var direction = message.ReadDirectionFromMessage();
-
-                            player.UpdatePosition(position);
-                            player.UpdateOrientation(direction);
-                            player.PlayVoice(readBuffer);
-                        }
-                        else if (type == 2)
-                        {
-                            var name = message.ReadString();
-                            var newPlayer = new Player(name);
-
-                            Players.Add(newPlayer);
-                            InvokeOnPlayerJoined(newPlayer);
-                        }
-                    }
-
-                    _client.Recycle(message);
+                    var netConnection = (NetConnectionStatus)message.ReadByte();
+                    var reason = message.ReadString();
+                    InvokeOnStatusChanged(netConnection, reason);
                 }
+                else if (message.MessageType == NetIncomingMessageType.Data)
+                {
+                    byte type = message.ReadByte();
+                    if(type == 0)
+                    {
+                        var id = message.ReadInt32();
+                        var name = message.ReadString();
+                        var newPlayer = new Player(name, id);
+
+                        Players.Add(newPlayer);
+                        InvokeOnPlayerJoined(newPlayer);
+                    }
+                    if (type == 1)
+                    {
+                        int size = message.ReadInt32();
+                        byte[] readBuffer = message.ReadBytes(size);
+                        var id = message.ReadInt32();
+
+                        var player = Players.Find(p => p.ID == id);
+                        if (player == null) return;
+
+                        var position = message.ReadPositionFromMessage();
+                        var direction = message.ReadDirectionFromMessage();
+
+                        player.UpdatePosition(position);
+                        player.UpdateOrientation(direction);
+                        player.PlayVoice(readBuffer);
+                    }
+                }
+
+                _client.Recycle(message);
             }
+
             Thread.Sleep(10);
         }
 
@@ -169,7 +186,7 @@ namespace RealityVoice
                 Console.WriteLine(_readBuffer.Length);
 #endif
                 var message = _client.CreateMessage();
-                message.Write((byte)1);
+                message.Write((byte)0x01);
                 message.Write(_readBuffer.Length);
                 message.Write(_readBuffer);
 

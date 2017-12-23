@@ -5,13 +5,14 @@ namespace RealityVoice
 {
     public class Player
     {
-
+        public int ID { get; set; }
         public string Name { get; set; }
         public PlaybackStream Playback { get; set; }
 
-        public Player(string name)
+        public Player(string name, int id)
         {
-            Name = name;
+            this.Name = name;
+            this.ID = id;
 
             CreatePlayback();
         }

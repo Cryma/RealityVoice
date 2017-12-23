@@ -1,23 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using FragLabs.Audio.Engines;
-using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 using MahApps.Metro.Controls;
 
@@ -69,19 +54,19 @@ namespace RealityVoice
             if (_voice == null) return;
 
             if (_voice.IsConnected)
-            {
                 HandleDisconnect();
-            }
             else
-            {
                 HandleConnect();               
-            }
         }
 
         private void HandleConnect()
         {
+            int port;
+            if (!int.TryParse(PortField.Text, out port))
+                return;
+
             if (!_voice.IsConnected)
-                _voice.Connect(IPField.Text, int.Parse(PortField.Text), SecretField.Password);
+                _voice.Connect(IPField.Text, port, SecretField.Password);
 
             Dispatcher.Invoke(() =>
             {

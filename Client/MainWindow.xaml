@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:VoiceApp"
         mc:Ignorable="d"
         Closing="OnWindowClosing"
-        Title="RealityLife Voice" TitleForeground="White" Height="137" Width="390" ResizeMode="NoResize" Background="#FF2D2D30">
+        Title="Voice-Chat" TitleForeground="White" Height="137" Width="390" ResizeMode="NoResize" Background="#FF2D2D30">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
             <StatusBarItem>
