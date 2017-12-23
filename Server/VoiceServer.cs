@@ -1,8 +1,8 @@
 ﻿using GrandTheftMultiplayer.Server.API;
+using GrandTheftMultiplayer.Server.Constant;
 using GrandTheftMultiplayer.Server.Elements;
 using GrandTheftMultiplayer.Shared.Math;
 using Lidgren.Network;
-using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,8 +24,6 @@ namespace VoiceChat
         public event OnTokenGeneratedHandler OnTokenGenerated;
         public event OnVoicePlayerConnectedHandler OnVoicePlayerConnected;
         public event OnVoicePlayerDisconnectedHandler OnVoicePlayerDisconnected;
-
-        private static Logger Logger = LogManager.GetCurrentClassLogger();
 
         private ConcurrentDictionary<NetConnection, ClientWrapper> _connectedPlayers = new ConcurrentDictionary<NetConnection, ClientWrapper>();
         private List<int> _usedIDs = new List<int>();
@@ -49,16 +47,16 @@ namespace VoiceChat
             }
             catch(NetException ex)
             {
-                Logger.Fatal(ex, "Network error while starting server");
+                API.shared.consoleOutput(LogCat.Error, $"Network error while starting server: {ex}");
                 return;
             }
             catch(Exception ex)
             {
-                Logger.Fatal(ex, "Error while starting server");
+                API.shared.consoleOutput(LogCat.Error, $"Error while starting server: {ex}");
                 return;
             }
 
-            Logger.Info($"Voice server started on port {port}");
+            API.shared.consoleOutput(LogCat.Info, $"Voice server started on port {port}");
 
             _serverThread = new Thread(Update);
             _serverThread.IsBackground = true;
@@ -125,14 +123,14 @@ namespace VoiceChat
                                     }
                                 }
 
-                                Logger.Warn("Player tried to join with an invalid token");
+                                API.shared.consoleOutput(LogCat.Warn, "Player tried to join with an invalid token");
                                 message.SenderConnection.Deny("invalid token provided");
                             }
                             else if (message.MessageType == NetIncomingMessageType.StatusChanged)
                             {
                                 var status = (NetConnectionStatus)message.ReadByte();
 #if DEBUG
-                                Logger.Debug("Voice player status changed");
+                                API.shared.consoleOutput(LogCat.Debug, "Voice player status changed");
 #endif
                                 if (status == NetConnectionStatus.Disconnected)
                                     PlayerVoiceDisconnected(message.SenderConnection);
@@ -147,11 +145,11 @@ namespace VoiceChat
                         }
                         catch(IndexOutOfRangeException ex)
                         {
-                            Logger.Error(ex, "Error decoding data");
+                            API.shared.consoleOutput(LogCat.Error, $"Error decoding data: {ex}");
                         }
                         catch(Exception ex)
                         {
-                            Logger.Error(ex, "Error reading network data");
+                            API.shared.consoleOutput(LogCat.Error, $"Error reading network data: {ex}");
                         }
                     }
                 }
@@ -159,7 +157,7 @@ namespace VoiceChat
             catch (ThreadAbortException) { } //No need to handle that
             catch (Exception ex)
             {
-                Logger.Error(ex, "Excetion in netcode");
+                API.shared.consoleOutput(LogCat.Error, $"Excetion in netcode: {ex}");
             }
         }
 
@@ -180,7 +178,7 @@ namespace VoiceChat
 
                 if(id == -1)
                 {
-                    Logger.Error("No valid ID");
+                    API.shared.consoleOutput(LogCat.Error, "No valid ID");
                     return -1;
                 }
 
@@ -257,7 +255,7 @@ namespace VoiceChat
         private void PlayerVoiceConnected(NetConnection connection, Client client)
         {
 #if DEBUG
-            Logger.Info($"{client.socialClubName} connected with voice");
+            API.shared.consoleOutput(LogCat.Info, $"{client.socialClubName} connected with voice");
 #endif
             var id = GetID();
             if (id == -1)
@@ -333,7 +331,7 @@ namespace VoiceChat
             if (_server == null)
                 return;
 
-            Logger.Info("Voice server stopping...");
+            API.shared.consoleOutput(LogCat.Info, "Voice server stopping...");
             _server.Shutdown("Server is shutting down");
             if (_serverThread.IsAlive)
             {
@@ -345,10 +343,10 @@ namespace VoiceChat
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error while trying to stop server");
+                    API.shared.consoleOutput(LogCat.Error, "Error while trying to stop server");
                 }
             }
-            Logger.Info("Voice server stopped");
+            API.shared.consoleOutput(LogCat.Info, "Voice server stopped");
         }
     }
 }
