@@ -1,7 +1,7 @@
 ﻿using FragLabs.Audio.Engines;
 using FragLabs.Audio.Engines.OpenAL;
 
-namespace VoiceApp
+namespace RealityVoice
 {
     public class Player
     {

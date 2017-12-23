@@ -1,7 +1,7 @@
 ﻿using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 
-namespace VoiceApp
+namespace RealityVoice
 {
     public static class Helper
     {

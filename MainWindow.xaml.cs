@@ -21,7 +21,7 @@ using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 using MahApps.Metro.Controls;
 
-namespace VoiceApp
+namespace RealityVoice
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -9,7 +9,7 @@ using FragLabs.Audio.Engines;
 using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 
-namespace VoiceApp
+namespace RealityVoice
 {
     class Voice
     {
