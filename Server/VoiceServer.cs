@@ -173,6 +173,7 @@ namespace VoiceChat
                     if(!_usedIDs.Contains(i))
                     {
                         id = i;
+                        _usedIDs.Add(id);
                         break;
                     }
                 }
@@ -271,7 +272,11 @@ namespace VoiceChat
 
             ClientWrapper client;
             if (_connectedPlayers.TryRemove(connection, out client))
+            {
+                if (_usedIDs.Contains(client.ID))
+                    _usedIDs.Add(client.ID);
                 OnVoicePlayerDisconnected?.Invoke(client.Client);
+            }
         }
 
         static string RandomString(int length)
