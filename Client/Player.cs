@@ -23,7 +23,7 @@ namespace RealityVoice
 
         public void UpdateOrientation(Vector3 orientation)
         {
-            Playback.Listener.Orientation = new FragLabs.Audio.Engines.OpenAL.Orientation()
+            Playback.Listener.Orientation = new Orientation()
             {
                 At = orientation,
                 Up = new Vector3() { X = 0.0f, Y = 1.0f, Z = 0.0f }
