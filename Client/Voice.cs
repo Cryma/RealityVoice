@@ -141,11 +141,25 @@ namespace RealityVoice
                         var player = Players.Find(p => p.ID == id);
                         if (player == null) return;
 
-                        var position = message.ReadPositionFromMessage();
-                        var direction = message.ReadDirectionFromMessage();
+                        var toUpdate = message.ReadByte();
 
-                        player.UpdatePosition(position);
-                        player.UpdateOrientation(direction);
+                        if(toUpdate == 1)
+                        {
+                            var position = message.ReadVector();
+                            var direction = message.ReadVector();
+                            player.UpdatePosition(position);
+                            player.UpdateOrientation(direction);
+                        }
+                        else if(toUpdate == 2)
+                        {
+                            var position = message.ReadVector();
+                            player.UpdatePosition(position);
+                        }
+                        else if(toUpdate == 3)
+                        {
+                            var direction = message.ReadVector();
+                            player.UpdateOrientation(direction);
+                        }
                         player.PlayVoice(readBuffer);
                     }
                 }

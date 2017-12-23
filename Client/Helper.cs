@@ -6,7 +6,7 @@ namespace RealityVoice
     public static class Helper
     {
 
-        public static Vector3 ReadPositionFromMessage(this NetIncomingMessage message)
+        public static Vector3 ReadVector(this NetIncomingMessage message)
         {
             float x = message.ReadFloat();
             float y = message.ReadFloat();
@@ -19,20 +19,5 @@ namespace RealityVoice
                 Z = y
             };
         }
-
-        public static Vector3 ReadDirectionFromMessage(this NetIncomingMessage message)
-        {
-            float x = message.ReadFloat();
-            float y = message.ReadFloat();
-            float z = message.ReadFloat();
-
-            return new Vector3
-            {
-                X = x,
-                Y = z,
-                Z = y
-            };
-        }
-
     }
 }

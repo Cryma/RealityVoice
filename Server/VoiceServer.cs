@@ -215,13 +215,36 @@ namespace VoiceChat
 
                 outMessage.Write(player.Value.ID);
 
-                outMessage.Write(relativePosition.X);
-                outMessage.Write(relativePosition.Y);
-                outMessage.Write(relativePosition.Z);
+                if (relativePosition != player.Value.OldPosition && cameraPosition != player.Value.OldPosition)
+                    outMessage.Write((byte)0x01);
+                else if (relativePosition != player.Value.OldPosition)
+                    outMessage.Write((byte)0x02);
+                else if (cameraPosition != player.Value.OldCamera)
+                    outMessage.Write((byte)0x03);
+                else
+                {
+                    outMessage.Write((byte)0x00);
+                    _server.SendMessage(outMessage, player.Key, NetDeliveryMethod.UnreliableSequenced);
+                    continue;
+                }
 
-                outMessage.Write(cameraPosition.X);
-                outMessage.Write(cameraPosition.Y);
-                outMessage.Write(cameraPosition.Z);
+                if (relativePosition != player.Value.OldPosition)
+                {
+                    outMessage.Write(relativePosition.X);
+                    outMessage.Write(relativePosition.Y);
+                    outMessage.Write(relativePosition.Z);
+
+                    player.Value.OldPosition = relativePosition;
+                }
+
+                if (cameraPosition != player.Value.OldCamera)
+                {
+                    outMessage.Write(cameraPosition.X);
+                    outMessage.Write(cameraPosition.Y);
+                    outMessage.Write(cameraPosition.Z);
+
+                    player.Value.OldCamera = cameraPosition;
+                }
 
                 _server.SendMessage(outMessage, player.Key, NetDeliveryMethod.UnreliableSequenced);
             }

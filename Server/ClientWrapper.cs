@@ -7,14 +7,14 @@ namespace VoiceChat
     {
         public int ID;
         public Client Client;
-        public Vector3 OldPostion;
+        public Vector3 OldPosition;
         public Vector3 OldCamera;
 
         public ClientWrapper(Client client, int ID)
         {
             this.Client = client;
 
-            OldPostion = new Vector3();
+            OldPosition = new Vector3();
             OldCamera = new Vector3();
         }
     }
