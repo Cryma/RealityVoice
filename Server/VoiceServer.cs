@@ -254,8 +254,8 @@ namespace VoiceChat
                 }
 
                 var newPlayerMessage = _server.CreateMessage();
-                newPlayerMessage.Write(clientWrapper.ID);
                 newPlayerMessage.Write((byte)0x00);
+                newPlayerMessage.Write(clientWrapper.ID);
                 newPlayerMessage.Write(client.name);
                 _server.SendToAll(newPlayerMessage, connection, NetDeliveryMethod.ReliableUnordered, 1);
             });
