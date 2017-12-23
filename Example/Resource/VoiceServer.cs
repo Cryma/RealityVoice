@@ -1,6 +1,5 @@
 ﻿using GrandTheftMultiplayer.Server.API;
 using GrandTheftMultiplayer.Server.Elements;
-using System;
 using VoiceChat;
 
 namespace GTMP_Test_Resource

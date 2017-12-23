@@ -58,9 +58,6 @@ namespace RealityVoice
 
             _client = new NetClient(config);
             _client.Start();
-
-            _updateThread = new Thread(Update);
-            _updateThread.IsBackground = true;
         }
 
         public void Connect(string ip, int port, string token)
@@ -77,6 +74,11 @@ namespace RealityVoice
             _capture = OpenALHelper.CaptureDevices[0].OpenStream((int)SampleRate, OpenALAudioFormat.Mono16Bit, 10);
             _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
 
+            if(_updateThread == null || _updateThread.ThreadState == System.Threading.ThreadState.Aborted)
+            {
+                _updateThread = new Thread(Update);
+                _updateThread.IsBackground = true;
+            }
             if (!_updateThread.IsAlive)
                 _updateThread.Start();
         }
