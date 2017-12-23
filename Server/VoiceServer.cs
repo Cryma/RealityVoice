@@ -215,11 +215,15 @@ namespace VoiceChat
 
                 outMessage.Write(player.Value.ID);
 
-                if (relativePosition != player.Value.OldPosition && cameraPosition != player.Value.OldPosition)
+            
+                var positionChanged = relativePosition != player.Value.OldPosition;
+                var cameraChanged = cameraPosition != player.Value.OldPosition;
+
+                if (positionChanged && cameraChanged)
                     outMessage.Write((byte)0x01);
-                else if (relativePosition != player.Value.OldPosition)
+                else if (positionChanged)
                     outMessage.Write((byte)0x02);
-                else if (cameraPosition != player.Value.OldCamera)
+                else if (cameraChanged)
                     outMessage.Write((byte)0x03);
                 else
                 {
@@ -228,7 +232,7 @@ namespace VoiceChat
                     continue;
                 }
 
-                if (relativePosition != player.Value.OldPosition)
+                if (positionChanged)
                 {
                     outMessage.Write(relativePosition.X);
                     outMessage.Write(relativePosition.Y);
@@ -237,7 +241,7 @@ namespace VoiceChat
                     player.Value.OldPosition = relativePosition;
                 }
 
-                if (cameraPosition != player.Value.OldCamera)
+                if (cameraChanged)
                 {
                     outMessage.Write(cameraPosition.X);
                     outMessage.Write(cameraPosition.Y);
