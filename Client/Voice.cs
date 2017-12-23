@@ -70,7 +70,7 @@ namespace RealityVoice
         {
             if (IsConnected) return;
 
-            NetOutgoingMessage message = _client.CreateMessage(token);
+            var message = _client.CreateMessage(token);
             
             _client.Connect(ip, port, message);
             IsConnected = true;
@@ -92,30 +92,30 @@ namespace RealityVoice
         {
             if (IsConnected)
             {
-                NetIncomingMessage msg;
-                msg = _client.ReadMessage();
-                if (msg != null)
+                var message = _client.ReadMessage();
+
+                if (message != null)
                 {
-                    if (msg.MessageType == NetIncomingMessageType.StatusChanged)
+                    if (message.MessageType == NetIncomingMessageType.StatusChanged)
                     {
-                        var netConnection = (NetConnectionStatus)msg.ReadByte();
-                        var reason = msg.ReadString();
+                        var netConnection = (NetConnectionStatus)message.ReadByte();
+                        var reason = message.ReadString();
                         InvokeOnStatusChanged(netConnection, reason);
                     }
-                    else if (msg.MessageType == NetIncomingMessageType.Data)
+                    else if (message.MessageType == NetIncomingMessageType.Data)
                     {
-                        byte type = msg.ReadByte();
+                        byte type = message.ReadByte();
                         if (type == 1)
                         {
-                            int size = msg.ReadInt32();
-                            byte[] readBuffer = msg.ReadBytes(size);
-                            string name = msg.ReadString();
+                            int size = message.ReadInt32();
+                            byte[] readBuffer = message.ReadBytes(size);
+                            string name = message.ReadString();
 
-                            Player player = Players.Find(p => p.Name == name);
+                            var player = Players.Find(p => p.Name == name);
                             if (player == null) return;
 
-                            Vector3 position = msg.ReadPositionFromMessage();
-                            Vector3 direction = msg.ReadDirectionFromMessage();
+                            var position = message.ReadPositionFromMessage();
+                            var direction = message.ReadDirectionFromMessage();
 
                             player.UpdatePosition(position);
                             player.UpdateOrientation(direction);
@@ -123,15 +123,15 @@ namespace RealityVoice
                         }
                         else if (type == 2)
                         {
-                            string name = msg.ReadString();
-                            Player newPlayer = new Player(name);
+                            var name = message.ReadString();
+                            var newPlayer = new Player(name);
 
                             Players.Add(newPlayer);
                             InvokeOnPlayerJoined(newPlayer);
                         }
                     }
 
-                    _client.Recycle(msg);
+                    _client.Recycle(message);
                 }
             }
             Thread.Sleep(10);
@@ -168,12 +168,12 @@ namespace RealityVoice
 #if DEBUG
                 Console.WriteLine(_readBuffer.Length);
 #endif
-                NetOutgoingMessage msg = _client.CreateMessage();
-                msg.Write((byte)1);
-                msg.Write(_readBuffer.Length);
-                msg.Write(_readBuffer);
+                var message = _client.CreateMessage();
+                message.Write((byte)1);
+                message.Write(_readBuffer.Length);
+                message.Write(_readBuffer);
 
-                _client.SendMessage(msg, NetDeliveryMethod.ReliableOrdered);
+                _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }
 
             _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
