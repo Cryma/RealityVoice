@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:VoiceApp"
         mc:Ignorable="d"
         Closing="OnWindowClosing"
-        Title="RealityLife Voice" TitleForeground="White" Height="97" Width="390" ResizeMode="NoResize" Background="#FF2D2D30">
+        Title="RealityLife Voice" TitleForeground="White" Height="137" Width="390" ResizeMode="NoResize" Background="#FF2D2D30">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
             <StatusBarItem>
@@ -20,13 +20,16 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="285"/>
             </Grid.ColumnDefinitions>
-            <Button  Grid.Row="0" Grid.Column="0" Content="Connect" Margin="5,5,0,0" Name="InteractionButton" Click="OnInteraction"></Button>
-            <PasswordBox Controls:TextBoxHelper.Watermark="Dein SecretToken" Grid.Row="0" Grid.Column="1" Margin="5,5,5,0" Name="SecretField" FontSize="14"></PasswordBox>
+            <Button  Grid.Row="1" Grid.Column="0" Content="Connect" Margin="5,5,0,0" Name="InteractionButton" Click="OnInteraction"></Button>
+            <PasswordBox Controls:TextBoxHelper.Watermark="Dein SecretToken" Grid.Row="1" Grid.Column="1" Margin="5,5,5,0" Name="SecretField" FontSize="14"></PasswordBox>
+            <TextBox Grid.Row="0" Grid.Column="0" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="5,5,5,0" Name="PortField" FontSize="14" Text="2424"></TextBox>
+            <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="5,5,5,0" Name="IPField" FontSize="14" Text="127.0.0.1"></TextBox>
         </Grid>
     </DockPanel>
 </Controls:MetroWindow>

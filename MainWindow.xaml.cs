@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -80,7 +81,7 @@ namespace VoiceApp
         private void HandleConnect()
         {
             if (!_voice.IsConnected)
-                _voice.Connect("127.0.0.1", 2424, SecretField.Password);
+                _voice.Connect(IPField.Text, int.Parse(PortField.Text), SecretField.Password);
 
             Dispatcher.Invoke(() =>
             {
@@ -103,6 +104,17 @@ namespace VoiceApp
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
             _voice?.Disconnect();
+        }
+
+        private void PreviewPortInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private bool IsTextAllowed(string text)
+        {
+            Regex regex = new Regex("[^0-9.-]+");
+            return !regex.IsMatch(text);
         }
     }
 }
