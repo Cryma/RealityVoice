@@ -8,6 +8,7 @@ using System.Timers;
 using FragLabs.Audio.Engines;
 using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
+using System.Threading;
 
 namespace RealityVoice
 {
@@ -25,7 +26,7 @@ namespace RealityVoice
         private byte[] _readBuffer;
         private Stream _capture;
 
-        private Timer _timer;
+        private Thread _updateThread;
 
         private float _lastVolume;
 
@@ -61,10 +62,8 @@ namespace RealityVoice
             _client = new NetClient(config);
             _client.Start();
 
-            _timer = new Timer(1);
-            _timer.AutoReset = false;
-            _timer.Elapsed += Update;
-            _timer.Start();
+            _updateThread = new Thread(Update);
+            _updateThread.IsBackground = true;
         }
 
         public void Connect(string ip, int port, string token)
@@ -89,7 +88,7 @@ namespace RealityVoice
             _client.Disconnect("");
         }
 
-        public void Update(object sender, ElapsedEventArgs e)
+        public void Update()
         {
             if (IsConnected)
             {
@@ -135,7 +134,7 @@ namespace RealityVoice
                     _client.Recycle(msg);
                 }
             }
-            _timer.Start();
+            Thread.Sleep(10);
         }
 
         private void EventOnStatusChanged(NetConnectionStatus status, string reason)
@@ -166,7 +165,9 @@ namespace RealityVoice
 
             if ((Math.Abs(volume - _lastVolume) > 0.03) || volume > 0.5)
             {
+#if DEBUG
                 Console.WriteLine(_readBuffer.Length);
+#endif
                 NetOutgoingMessage msg = _client.CreateMessage();
                 msg.Write((byte)1);
                 msg.Write(_readBuffer.Length);
