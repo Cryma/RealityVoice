@@ -6,13 +6,25 @@ using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using VoiceChat.EventArguments;
 
-namespace Server
+namespace VoiceChat
 {
     public class VoiceServer : IDisposable
     {
+
+        public delegate void OnTokenGeneratedHandler(VoiceConnectedEventArgs eventArgs);
+        public delegate void OnVoicePlayerConnectedHandler(Client player);
+        public delegate void OnVoicePlayerDisconnectedHandler(Client player);
+
+        public event OnTokenGeneratedHandler OnTokenGenerated;
+        public event OnVoicePlayerConnectedHandler OnVoicePlayerConnected;
+        public event OnVoicePlayerDisconnectedHandler OnVoicePlayerDisconnected;
+
         private static Logger Logger = LogManager.GetCurrentClassLogger();
 
         private ConcurrentDictionary<NetConnection, ClientWrapper> _connectedPlayers = new ConcurrentDictionary<NetConnection, ClientWrapper>();
@@ -22,7 +34,7 @@ namespace Server
         private Thread _serverThread;
         private bool _shutDown;
 
-        public VoiceServer(int port)
+        public VoiceServer(int port, API API)
         {
             var config = new NetPeerConfiguration("voice-chat")
             {
@@ -51,6 +63,31 @@ namespace Server
             _serverThread = new Thread(Update);
             _serverThread.IsBackground = true;
             _serverThread.Start();
+
+            API.onPlayerConnected += GameOnPlayerConnected;
+            API.onClientEventTrigger += GameOnClientEventTrigger;
+        }
+
+        private void GameOnClientEventTrigger(Client sender, string eventName, params object[] arguments)
+        {
+            if (eventName == "voiceCam") //synced entity data??
+            {
+                sender.setData("campos", (Vector3)arguments[0]);
+            }
+        }
+
+
+        private void GameOnPlayerConnected(Client player)
+        {
+            string secretToken = RandomString(5);
+            player.setData("token", secretToken);
+            player.triggerEvent("voiceInit");
+
+            OnTokenGenerated?.Invoke(new VoiceConnectedEventArgs()
+            {
+                Client = player,
+                SecretToken = secretToken
+            });
         }
 
         private void Update()
@@ -223,6 +260,8 @@ namespace Server
                 _server.SendToAll(newPlayerMessage, connection, NetDeliveryMethod.ReliableUnordered, 1);
             });
             task.Start();
+
+            OnVoicePlayerConnected?.Invoke(client);
         }
 
         private void PlayerVoiceDisconnected(NetConnection connection)
@@ -230,7 +269,28 @@ namespace Server
             if (!_connectedPlayers.ContainsKey(connection))
                 return;
 
-            _connectedPlayers.TryRemove(connection, out _);
+            ClientWrapper client;
+            if (_connectedPlayers.TryRemove(connection, out client))
+                OnVoicePlayerDisconnected?.Invoke(client.Client);
+        }
+
+        static string RandomString(int length)
+        {
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            var res = new StringBuilder();
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                byte[] uintBuffer = new byte[sizeof(uint)];
+
+                while (length-- > 0)
+                {
+                    rng.GetBytes(uintBuffer);
+                    uint num = BitConverter.ToUInt32(uintBuffer, 0);
+                    res.Append(valid[(int)(num % (uint)valid.Length)]);
+                }
+            }
+
+            return res.ToString();
         }
 
         public void Stop() => Dispose();

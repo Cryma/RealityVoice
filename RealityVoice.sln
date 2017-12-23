@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{C1A7A936-22AC-4119-A68B-35DF6ED50DE3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{44BD9BD5-A06B-4549-A896-A06ADBC08EF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTMP-Test-Resource", "Example\GTMP-Test-Resource\GTMP-Test-Resource.csproj", "{2189B314-8617-4B7C-913D-3F873236A5EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{C1A7A936-22AC-4119-A68B-35DF6ED50DE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1A7A936-22AC-4119-A68B-35DF6ED50DE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1A7A936-22AC-4119-A68B-35DF6ED50DE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2189B314-8617-4B7C-913D-3F873236A5EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2189B314-8617-4B7C-913D-3F873236A5EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2189B314-8617-4B7C-913D-3F873236A5EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2189B314-8617-4B7C-913D-3F873236A5EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2189B314-8617-4B7C-913D-3F873236A5EA} = {44BD9BD5-A06B-4549-A896-A06ADBC08EF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {00D35F8D-5291-4E98-8E74-D36F9D864BD3}

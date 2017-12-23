@@ -1,7 +1,7 @@
 ﻿using GrandTheftMultiplayer.Server.Elements;
 using GrandTheftMultiplayer.Shared.Math;
 
-namespace Server
+namespace VoiceChat
 {
     public class ClientWrapper
     {
