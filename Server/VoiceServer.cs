@@ -80,7 +80,7 @@ namespace VoiceChat
         private void GameOnPlayerConnected(Client player)
         {
             string secretToken = RandomString(5);
-            player.setData("token", secretToken);
+            player.setData("voice_token", secretToken);
             player.triggerEvent("voiceInit");
 
             OnTokenGenerated?.Invoke(new VoiceConnectedEventArgs()
