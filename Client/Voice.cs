@@ -226,7 +226,7 @@ namespace RealityVoice
                 var message = _client.CreateMessage();
                 message.Write((byte)0x01);
                 message.Write(encoded);
-                message.Write(_readBuffer.Take(encoded).ToArray());
+                message.Write(buffer.Take(encoded).ToArray());
 
                 _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }
