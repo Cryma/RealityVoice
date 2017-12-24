@@ -108,66 +108,73 @@ namespace RealityVoice
 
         public void Update()
         {
-            if (!IsConnected)
-                return;
-
-            var message = _client.ReadMessage();
-            if (message != null)
+            try
             {
-                if (message.MessageType == NetIncomingMessageType.StatusChanged)
+                while (IsConnected)
                 {
-                    var netConnection = (NetConnectionStatus)message.ReadByte();
-                    var reason = message.ReadString();
-                    InvokeOnStatusChanged(netConnection, reason);
-                }
-                else if (message.MessageType == NetIncomingMessageType.Data)
-                {
-                    byte type = message.ReadByte();
-                    if(type == 0)
+                    var message = _client.ReadMessage();
+                    if (message != null)
                     {
-                        var id = message.ReadInt32();
-                        var name = message.ReadString();
-                        var newPlayer = new Player(name, id);
+                        if (message.MessageType == NetIncomingMessageType.StatusChanged)
+                        {
+                            var netConnection = (NetConnectionStatus)message.ReadByte();
+                            var reason = message.ReadString();
+                            InvokeOnStatusChanged(netConnection, reason);
+                        }
+                        else if (message.MessageType == NetIncomingMessageType.Data)
+                        {
+                            byte type = message.ReadByte();
+                            if (type == 0)
+                            {
+                                var id = message.ReadInt32();
+                                var name = message.ReadString();
+                                var newPlayer = new Player(name, id);
 
-                        Players.Add(newPlayer);
-                        InvokeOnPlayerJoined(newPlayer);
+                                Players.Add(newPlayer);
+                                InvokeOnPlayerJoined(newPlayer);
+                            }
+                            if (type == 1)
+                            {
+                                int size = message.ReadInt32();
+                                byte[] readBuffer = message.ReadBytes(size);
+                                var id = message.ReadInt32();
+
+                                var player = Players.Find(p => p.ID == id);
+                                if (player == null) return;
+
+                                var toUpdate = message.ReadByte();
+
+                                if (toUpdate == 1)
+                                {
+                                    var position = message.ReadVector();
+                                    var direction = message.ReadVector();
+                                    player.UpdatePosition(position);
+                                    player.UpdateOrientation(direction);
+                                }
+                                else if (toUpdate == 2)
+                                {
+                                    var position = message.ReadVector();
+                                    player.UpdatePosition(position);
+                                }
+                                else if (toUpdate == 3)
+                                {
+                                    var direction = message.ReadVector();
+                                    player.UpdateOrientation(direction);
+                                }
+                                player.PlayVoice(readBuffer);
+                            }
+                        }
+
+                        _client.Recycle(message);
                     }
-                    if (type == 1)
-                    {
-                        int size = message.ReadInt32();
-                        byte[] readBuffer = message.ReadBytes(size);
-                        var id = message.ReadInt32();
-
-                        var player = Players.Find(p => p.ID == id);
-                        if (player == null) return;
-
-                        var toUpdate = message.ReadByte();
-
-                        if(toUpdate == 1)
-                        {
-                            var position = message.ReadVector();
-                            var direction = message.ReadVector();
-                            player.UpdatePosition(position);
-                            player.UpdateOrientation(direction);
-                        }
-                        else if(toUpdate == 2)
-                        {
-                            var position = message.ReadVector();
-                            player.UpdatePosition(position);
-                        }
-                        else if(toUpdate == 3)
-                        {
-                            var direction = message.ReadVector();
-                            player.UpdateOrientation(direction);
-                        }
-                        player.PlayVoice(readBuffer);
-                    }
+                    Thread.Sleep(10);
                 }
-
-                _client.Recycle(message);
             }
-
-            Thread.Sleep(10);
+            catch (ThreadAbortException) { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception in netcode: {ex}");
+            }
         }
 
         private void EventOnStatusChanged(NetConnectionStatus status, string reason)

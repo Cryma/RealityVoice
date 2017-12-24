@@ -90,21 +90,28 @@ namespace VoiceChat
 
         private void Update()
         {
+            API.shared.consoleOutput("Message thread started");
+
             if (_server == null)
                 return;
 
             if (_server.Status != NetPeerStatus.Running)
+            {
+                API.shared.consoleOutput("Server not started");
                 return;
+            }
 
             try
             {
 
                 while (!_shutDown)
                 {
+                    Thread.Sleep(10);
+
                     var messages = new List<NetIncomingMessage>();
                     var messageCount = _server.ReadMessages(messages);
                     if (messageCount == 0)
-                        return;
+                        continue;
 
                     foreach(var message in messages)
                     {
@@ -112,6 +119,7 @@ namespace VoiceChat
                         {
                             if (message.MessageType == NetIncomingMessageType.ConnectionApproval)
                             {
+                                bool playerFound = false;
                                 var token = message.ReadString();
 
                                 foreach (var player in API.shared.getAllPlayers())
@@ -119,12 +127,16 @@ namespace VoiceChat
                                     if (player.getData("voice_token") == token)
                                     {
                                         PlayerVoiceConnected(message.SenderConnection, player);
-                                        return;
+                                        playerFound = true;
+                                        break;
                                     }
                                 }
 
-                                API.shared.consoleOutput(LogCat.Warn, "Player tried to join with an invalid token");
-                                message.SenderConnection.Deny("invalid token provided");
+                                if (!playerFound)
+                                {
+                                    API.shared.consoleOutput(LogCat.Warn, "Player tried to join with an invalid token");
+                                    message.SenderConnection.Deny("invalid token provided");
+                                }
                             }
                             else if (message.MessageType == NetIncomingMessageType.StatusChanged)
                             {
@@ -159,6 +171,7 @@ namespace VoiceChat
             {
                 API.shared.consoleOutput(LogCat.Error, $"Excetion in netcode: {ex}");
             }
+            API.shared.consoleOutput("Message thread stopped");
         }
 
         private int GetID()
