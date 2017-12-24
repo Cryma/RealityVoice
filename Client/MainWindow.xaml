@@ -11,7 +11,7 @@
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
             <StatusBarItem>
-                <TextBlock Name="StatusLabel" Width="200" Foreground="White"></TextBlock>
+                <TextBlock Name="StatusLabel" Width="200" Foreground="White">Status: Bereit zum verbinden</TextBlock>
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Name="PlayerLabel" Width="150" Foreground="White" TextAlignment="Right"></TextBlock>
