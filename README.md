@@ -9,10 +9,12 @@ RealityVoice ist ein Open-source 3D Voice-Chat für GTA 5 ([Grand Theft Multipla
 Es wäre trotzdem schön, wenn hier eine aktive Mitarbeit vorhanden ist, damit es schnellstmöglich eine stabile und *freie* Alternative für die derzeit bestehenden Voice-Chats gibt.
 
 # Serverseitige Implementation
-Um RealityVoice Serverseitig zu nutzen, muss es einen Verweis zu Lidgren geben. Die compilierte Dll ist [hier](https://github.com/Cryma/RealityVoice/tree/master/libs) zu finden.
+Um RealityVoice Serverseitig zu nutzen, muss es einen Verweis zu VoiceChat.dll geben.
 
 # TODO
   - [ ] Network-Messages reduzieren
+		@root / 24.12.207
+		Rework angefangen. Netzwerk last verringert. 
   - [ ] Push-to-talk / Bessere Voice-Erkennung
   - [ ] Lautstärkeregler
 
