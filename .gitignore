@@ -2,3 +2,5 @@ obj/
 bin/
 /.vs/RealityVoice/v15
 /packages
+/.vs
+/Client/Client.csproj.user
