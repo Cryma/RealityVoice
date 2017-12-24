@@ -17,7 +17,7 @@ function* sendData() {
         yield 250;
         var cam = API.getGameplayCamDir();
         if (oldCamera != cam) {
-            API.triggerServerEvent("voiceCam", );
+            API.triggerServerEvent("voiceCam", cam);
             oldCamera = cam;
         }
     }
