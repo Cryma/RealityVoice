@@ -227,7 +227,7 @@ namespace VoiceChat
                 outMessage.Write(player.Value.ID);
             
                 var positionChanged = relativePosition != player.Value.OldPosition;
-                var cameraChanged = cameraPosition != player.Value.OldPosition;
+                var cameraChanged = cameraPosition != player.Value.OldCamera;
 
                 if (positionChanged && cameraChanged)
                     outMessage.Write((byte)0x01);
