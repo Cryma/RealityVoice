@@ -201,7 +201,7 @@ namespace VoiceChat
 
         private void BroadcastVoiceData(NetIncomingMessage message)
         {
-            if (_connectedPlayers.ContainsKey(message.SenderConnection))
+            if (!_connectedPlayers.ContainsKey(message.SenderConnection))
                 return;
 
             int size = message.ReadInt32();
