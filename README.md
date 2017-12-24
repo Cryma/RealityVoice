@@ -1,4 +1,4 @@
-# RealityVoice
+# RealityVoice [![Build status](https://ci.appveyor.com/api/projects/status/j13w2gt9rwfcfqxs/branch/master?svg=true)](https://ci.appveyor.com/project/Cryma/realityvoice/branch/master)
 
 ## [English readme](https://github.com/Cryma/RealityVoice/blob/master/README_EN.md)
 

@@ -1,4 +1,4 @@
-# RealityVoice
+# RealityVoice [![Build status](https://ci.appveyor.com/api/projects/status/j13w2gt9rwfcfqxs/branch/master?svg=true)](https://ci.appveyor.com/project/Cryma/realityvoice/branch/master)
 
 RealityVoice is an open-source 3D voice chat for GTA 5 ([Grand Theft Multiplayer](https://gt-mp.net/)), based on OpenAL and Lidgren.
 
