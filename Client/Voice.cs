@@ -140,7 +140,7 @@ namespace RealityVoice
                                 var id = message.ReadInt32();
 
                                 var player = Players.Find(p => p.ID == id);
-                                if (player == null) return;
+                                if (player == null) continue;
 
                                 var toUpdate = message.ReadByte();
 
