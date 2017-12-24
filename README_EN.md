@@ -11,7 +11,7 @@ To use RealityVoice on the serverside, a reference to VoiceChat.dll
 
 # TODO
   - [ ] Reduce network messages
-		@root / 24.12.207
+		@root / 24.12.2017
 		Rework started. Network traffic reduced
   - [ ] Push-to-talk / Improved voice recognition
   - [ ] Volume-controls

@@ -13,7 +13,7 @@ Um RealityVoice Serverseitig zu nutzen, muss es einen Verweis zu VoiceChat.dll g
 
 # TODO
   - [ ] Network-Messages reduzieren
-		@root / 24.12.207
+		@root / 24.12.2017
 		Rework angefangen. Netzwerk last verringert. 
   - [ ] Push-to-talk / Bessere Voice-Erkennung
   - [ ] Lautstärkeregler
