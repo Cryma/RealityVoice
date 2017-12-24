@@ -6,6 +6,8 @@ using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 using System.Threading;
 using System.Diagnostics;
+using Concentus.Structs;
+using System.Linq;
 
 namespace RealityVoice
 {
@@ -26,6 +28,9 @@ namespace RealityVoice
         private Thread _updateThread;
 
         private float _lastVolume;
+
+        private OpusDecoder _decoder;
+        private OpusEncoder _encoder;
 
         #region Events
 
@@ -50,6 +55,9 @@ namespace RealityVoice
         public Voice()
         {
             OnStatusChanged += EventOnStatusChanged;
+
+            _decoder = new OpusDecoder(24000, 2);
+            _encoder = new OpusEncoder(24000, 2, Concentus.Enums.OpusApplication.OPUS_APPLICATION_VOIP);
         }
 
         public void Start()
@@ -136,7 +144,7 @@ namespace RealityVoice
                             if (type == 1)
                             {
                                 int size = message.ReadInt32();
-                                byte[] readBuffer = message.ReadBytes(size);
+                                byte[] readBuffer = Decode(message.ReadBytes(size), size);
                                 var id = message.ReadInt32();
 
                                 var player = Players.Find(p => p.ID == id);
@@ -209,10 +217,16 @@ namespace RealityVoice
 #if DEBUG
                 Console.WriteLine(_readBuffer.Length);
 #endif
+                byte[] buffer = new byte[_readBuffer.Length];
+                var encoded = _encoder.Encode(BytesToShorts(_readBuffer), 0, 960, buffer, 0, _readBuffer.Length);
+#if DEBUG
+                Console.WriteLine($"Encoced {encoded} bytes. length: {buffer.Length}");
+#endif
+
                 var message = _client.CreateMessage();
                 message.Write((byte)0x01);
-                message.Write(_readBuffer.Length);
-                message.Write(_readBuffer);
+                message.Write(encoded);
+                message.Write(_readBuffer.Take(encoded).ToArray());
 
                 _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }
@@ -221,5 +235,47 @@ namespace RealityVoice
             _lastVolume = volume;
         }
 
+
+        private short[] BytesToShorts(byte[] input)
+        {
+            return BytesToShorts(input, 0, input.Length);
+        }
+
+        private short[] BytesToShorts(byte[] input, int offset, int length)
+        {
+            short[] processedValues = new short[length / 2];
+            for (int c = 0; c < processedValues.Length; c++)
+            {
+                processedValues[c] = (short)(((int)input[(c * 2) + offset]) << 0);
+                processedValues[c] += (short)(((int)input[(c * 2) + 1 + offset]) << 8);
+            }
+
+            return processedValues;
+        }
+
+        private byte[] ShortsToBytes(short[] input)
+        {
+            return ShortsToBytes(input, 0, input.Length);
+        }
+
+        private byte[] ShortsToBytes(short[] input, int offset, int length)
+        {
+            byte[] processedValues = new byte[length * 2];
+            for (int c = 0; c < length; c++)
+            {
+                processedValues[c * 2] = (byte)(input[c + offset] & 0xFF);
+                processedValues[c * 2 + 1] = (byte)((input[c + offset] >> 8) & 0xFF);
+            }
+
+            return processedValues;
+        }
+
+        public byte[] Decode(byte[] bytes, int length)
+        {
+            short[] buffer = new short[length];
+            _decoder.Decode(bytes, 0, length, buffer, 0, 960);
+
+            return ShortsToBytes(buffer);
+        }
     }
 }
