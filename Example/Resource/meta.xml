@@ -4,6 +4,7 @@
 
   <assembly ref="Lidgren.Network.dll"/>
   <assembly ref="NLog.dll"/>
+  <assembly ref="VoiceChat.dll" />
 
   <script src="VoiceServer.js" type="client" lang="javascript" />
   <script src="VoiceServer.cs" type="server" lang="csharp" />
