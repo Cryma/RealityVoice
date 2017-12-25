@@ -17,7 +17,7 @@ namespace RealityVoice
 
         public List<Player> Players = new List<Player>();
 
-        public SpeakMode SelectedSpeakMode = SpeakMode.VoiceActivation;
+        public VoiceMode SelectedVoiceMode = VoiceMode.VoiceActivation;
         public bool IsSpeaking;
 
         private NetClient _client;
@@ -216,7 +216,7 @@ namespace RealityVoice
 
             var read = _capture.EndRead(ar);
 
-            if(SelectedSpeakMode == SpeakMode.VoiceActivation)
+            if(SelectedVoiceMode == VoiceMode.VoiceActivation)
                 HandleVoiceActivation();
 
             if (IsSpeaking)

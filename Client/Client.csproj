@@ -76,7 +76,7 @@
     <Compile Include="EnumBooleanConverter.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Player.cs" />
-    <Compile Include="SpeakMode.cs" />
+    <Compile Include="VoiceMode.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Voice.cs" />
     <Page Include="MainWindow.xaml">

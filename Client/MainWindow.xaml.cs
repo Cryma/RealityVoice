@@ -35,7 +35,7 @@ namespace RealityVoice
 
         private void OnGlobalKeyDown(object sender, RawKeyEventArgs e)
         {
-            if (e.Key == Key.B && _voice?.SelectedSpeakMode == SpeakMode.PushToTalk)
+            if (e.Key == Key.B && _voice?.SelectedVoiceMode == VoiceMode.PushToTalk)
             {
                 _voice.IsSpeaking = true;
             }
@@ -43,7 +43,7 @@ namespace RealityVoice
 
         private void OnGlobalKeyUp(object sender, RawKeyEventArgs e)
         {
-            if (e.Key == Key.B && _voice?.SelectedSpeakMode == SpeakMode.PushToTalk)
+            if (e.Key == Key.B && _voice?.SelectedVoiceMode == VoiceMode.PushToTalk)
             {
                 _voice.IsSpeaking = false;
             }
@@ -128,13 +128,13 @@ namespace RealityVoice
         private void OnSelectVoiceActivation(object sender, RoutedEventArgs e)
         {
             if (_voice == null) return;
-            _voice.SelectedSpeakMode = SpeakMode.VoiceActivation;
+            _voice.SelectedVoiceMode = VoiceMode.VoiceActivation;
         }
 
         private void OnSelectPushToTalk(object sender, RoutedEventArgs e)
         {
             if (_voice == null) return;
-            _voice.SelectedSpeakMode = SpeakMode.PushToTalk;
+            _voice.SelectedVoiceMode = VoiceMode.PushToTalk;
         }
 
     }

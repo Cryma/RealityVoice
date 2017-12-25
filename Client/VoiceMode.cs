@@ -1,6 +1,6 @@
 ﻿namespace RealityVoice
 {
-    public enum SpeakMode
+    public enum VoiceMode
     {
         VoiceActivation, PushToTalk
     }
