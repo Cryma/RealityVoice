@@ -75,6 +75,7 @@
     </ApplicationDefinition>
     <Compile Include="Helper.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Voice.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

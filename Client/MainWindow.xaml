@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:local="clr-namespace:VoiceApp"
+        xmlns:properties="clr-namespace:RealityVoice.Properties"
         mc:Ignorable="d"
         Closing="OnWindowClosing"
+        DataContext="{x:Static properties:Settings.Default}"
         Title="Voice-Chat" TitleForeground="White" Height="137" Width="390" ResizeMode="NoResize" Background="#FF2D2D30">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
@@ -28,8 +29,8 @@
             </Grid.ColumnDefinitions>
             <Button  Grid.Row="1" Grid.Column="0" Content="Connect" Margin="4,5,1,0" Name="InteractionButton" Click="OnInteraction"></Button>
             <PasswordBox Controls:TextBoxHelper.Watermark="Dein SecretToken" Grid.Row="1" Grid.Column="1" Margin="5,5,5,0" Name="SecretField" FontSize="14"></PasswordBox>
-            <TextBox Grid.Row="0" Grid.Column="0" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="2424"></TextBox>
-            <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="5,5,5,0" Name="IPField" FontSize="14" Text="127.0.0.1"></TextBox>
+            <TextBox Grid.Row="0" Grid.Column="0" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="{Binding Port}"></TextBox>
+            <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="5,5,5,0" Name="IPField" FontSize="14" Text="{Binding IP}"></TextBox>
         </Grid>
     </DockPanel>
 </Controls:MetroWindow>
