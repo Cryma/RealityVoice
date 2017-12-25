@@ -5,32 +5,79 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:properties="clr-namespace:RealityVoice.Properties"
+        xmlns:realityVoice="clr-namespace:RealityVoice"
         mc:Ignorable="d"
         Closing="OnWindowClosing"
         DataContext="{x:Static properties:Settings.Default}"
-        Title="Voice-Chat" TitleForeground="White" Height="137" Width="390" ResizeMode="NoResize" Background="#FF2D2D30">
+        Title="Voice-Chat" TitleForeground="White" Height="222.25" Width="390" ResizeMode="NoResize" Background="White">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
-            <StatusBarItem>
-                <TextBlock Name="StatusLabel" Width="200" Foreground="White">Status: Bereit zum verbinden</TextBlock>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Name="PlayerLabel" Width="150" Foreground="White" TextAlignment="Right"></TextBlock>
-            </StatusBarItem>
+            <WrapPanel>
+                <StatusBarItem>
+                    <TextBlock Name="StatusLabel" Width="195" Foreground="White">Status: Ready</TextBlock>
+                </StatusBarItem>
+                <StatusBarItem>
+                    
+                </StatusBarItem>
+                <StatusBarItem>
+                    <TextBlock Name="PlayerLabel" Foreground="White" TextAlignment="Right"></TextBlock>
+                </StatusBarItem>
+            </WrapPanel>
         </StatusBar>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-                <RowDefinition Height="40"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="285"/>
-            </Grid.ColumnDefinitions>
-            <Button  Grid.Row="1" Grid.Column="0" Content="Connect" Margin="4,5,1,0" Name="InteractionButton" Click="OnInteraction"></Button>
-            <PasswordBox Controls:TextBoxHelper.Watermark="Dein SecretToken" Grid.Row="1" Grid.Column="1" Margin="5,5,5,0" Name="SecretField" FontSize="14"></PasswordBox>
-            <TextBox Grid.Row="0" Grid.Column="0" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="{Binding Port}"></TextBox>
-            <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="5,5,5,0" Name="IPField" FontSize="14" Text="{Binding IP}"></TextBox>
-        </Grid>
+        <Controls:MetroTabControl>
+            <Controls:MetroTabItem>
+                <Controls:MetroTabItem.Header>
+                    Home
+                </Controls:MetroTabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="285"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Secret Token</Label>
+                    <PasswordBox Controls:TextBoxHelper.Watermark="Your secret token" Grid.Row="0" Grid.Column="1" Margin="5,5,1,0" Name="SecretField" FontSize="14"></PasswordBox>
+
+                    <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Speakmode</Label>
+                    <WrapPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <RadioButton Name="VoiceActivationRadio" Width="142.5" GroupName="SpeakMode" Content="Voice Activation" Checked="OnSelectVoiceActivation" />
+                        <RadioButton Name="PushToTalkRadio" GroupName="SpeakMode" Content="Push-to-talk" Checked="OnSelectPushToTalk" />
+                    </WrapPanel>
+
+                    <Button  Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Content="Connect" Margin="5,5,1,0" Name="InteractionButton" Click="OnInteraction" />
+                    
+                </Grid>
+            </Controls:MetroTabItem>
+            <Controls:MetroTabItem>
+                <Controls:MetroTabItem.Header>
+                    Settings
+                </Controls:MetroTabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="285"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="Port" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="{Binding Port}" Grid.ColumnSpan="2"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="IP Address" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="4,5,1,0" Name="IPField" FontSize="14" Text="{Binding IP}"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="Push-To-Talk" />
+                    <Button Grid.Row="2" Grid.Column="1" IsEnabled="False" Margin="4,5,1,0" Content="B" />
+                </Grid>
+            </Controls:MetroTabItem>
+        </Controls:MetroTabControl>
     </DockPanel>
 </Controls:MetroWindow>
