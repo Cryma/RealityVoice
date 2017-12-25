@@ -21,6 +21,8 @@ namespace RealityVoice
         {
             InitializeComponent();
 
+            LoadSettings();
+
             _listener.KeyDown += OnGlobalKeyDown;
             _listener.KeyUp += OnGlobalKeyUp;
 
@@ -31,6 +33,23 @@ namespace RealityVoice
 
             _voice.Start();
             
+        }
+
+        private void LoadSettings()
+        {
+            switch (Properties.Settings.Default.VoiceMode)
+            {
+                case VoiceMode.VoiceActivation:
+                    VoiceActivationRadio.IsChecked = true;
+                    OnSelectVoiceActivation(null, null);
+                    break;
+                case VoiceMode.PushToTalk:
+                    PushToTalkRadio.IsChecked = true;
+                    OnSelectPushToTalk(null, null);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void OnGlobalKeyDown(object sender, RawKeyEventArgs e)
@@ -114,9 +133,11 @@ namespace RealityVoice
             if (!int.TryParse(PortField.Text, out port))
                 port = 1234;
 
+            var voiceMode = _voice == null ? Properties.Settings.Default.VoiceMode : _voice.SelectedVoiceMode;
 
             Properties.Settings.Default.IP = IPField.Text;
             Properties.Settings.Default.Port = port;
+            Properties.Settings.Default.VoiceMode = voiceMode;
 
             Properties.Settings.Default.Save();
 

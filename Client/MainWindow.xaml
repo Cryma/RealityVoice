@@ -41,12 +41,12 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Secret Token</Label>
-                    <PasswordBox Controls:TextBoxHelper.Watermark="Dein SecretToken" Grid.Row="0" Grid.Column="1" Margin="5,5,1,0" Name="SecretField" FontSize="14"></PasswordBox>
+                    <PasswordBox Controls:TextBoxHelper.Watermark="Your secret token" Grid.Row="0" Grid.Column="1" Margin="5,5,1,0" Name="SecretField" FontSize="14"></PasswordBox>
 
                     <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Speakmode</Label>
                     <WrapPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <RadioButton Width="142.5" GroupName="SpeakMode" Content="Voice Activation" Checked="OnSelectVoiceActivation" IsChecked="True"/>
-                        <RadioButton GroupName="SpeakMode" Content="Push-to-talk" Checked="OnSelectPushToTalk" />
+                        <RadioButton Name="VoiceActivationRadio" Width="142.5" GroupName="SpeakMode" Content="Voice Activation" Checked="OnSelectVoiceActivation" />
+                        <RadioButton Name="PushToTalkRadio" GroupName="SpeakMode" Content="Push-to-talk" Checked="OnSelectPushToTalk" />
                     </WrapPanel>
 
                     <Button  Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Content="Connect" Margin="5,5,1,0" Name="InteractionButton" Click="OnInteraction" />

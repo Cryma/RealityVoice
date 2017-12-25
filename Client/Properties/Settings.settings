@@ -8,5 +8,8 @@
     <Setting Name="IP" Type="System.String" Scope="User">
       <Value Profile="(Default)">127.0.0.1</Value>
     </Setting>
+    <Setting Name="VoiceMode" Type="RealityVoice.VoiceMode" Scope="User">
+      <Value Profile="(Default)">VoiceActivation</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

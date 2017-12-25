@@ -46,5 +46,17 @@ namespace RealityVoice.Properties {
                 this["IP"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("VoiceActivation")]
+        public global::RealityVoice.VoiceMode VoiceMode {
+            get {
+                return ((global::RealityVoice.VoiceMode)(this["VoiceMode"]));
+            }
+            set {
+                this["VoiceMode"] = value;
+            }
+        }
     }
 }
