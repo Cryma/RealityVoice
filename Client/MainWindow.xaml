@@ -7,7 +7,7 @@
         xmlns:realityVoice="clr-namespace:RealityVoice"
         mc:Ignorable="d"
         Closing="OnWindowClosing"
-        Title="Voice-Chat" TitleForeground="White" Height="223.25" Width="390" ResizeMode="NoResize" Background="White">
+        Title="Voice-Chat" TitleForeground="White" Height="222.25" Width="390" ResizeMode="NoResize" Background="White">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
             <WrapPanel>
@@ -37,8 +37,9 @@
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="285"/>
                     </Grid.ColumnDefinitions>
-                    <Button  Grid.Row="0" Grid.Column="0" Content="Connect" Margin="4,5,1,0" Name="InteractionButton" Click="OnInteraction"></Button>
-                    <PasswordBox Controls:TextBoxHelper.Watermark="Dein SecretToken" Grid.Row="0" Grid.Column="1" Margin="5,5,5,0" Name="SecretField" FontSize="14"></PasswordBox>
+
+                    <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Secret Token</Label>
+                    <PasswordBox Controls:TextBoxHelper.Watermark="Dein SecretToken" Grid.Row="0" Grid.Column="1" Margin="5,5,1,0" Name="SecretField" FontSize="14"></PasswordBox>
 
                     <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Speakmode</Label>
                     <WrapPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -46,6 +47,8 @@
                         <RadioButton GroupName="SpeakMode" Content="Push-to-talk" Checked="OnSelectPushToTalk" />
                     </WrapPanel>
 
+                    <Button  Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Content="Connect" Margin="5,5,1,0" Name="InteractionButton" Click="OnInteraction" />
+                    
                 </Grid>
             </Controls:MetroTabItem>
             <Controls:MetroTabItem>
