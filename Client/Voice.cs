@@ -17,6 +17,9 @@ namespace RealityVoice
 
         public List<Player> Players = new List<Player>();
 
+        public SpeakMode SelectedSpeakMode = SpeakMode.VoiceActivation;
+        public bool IsSpeaking;
+
         private NetClient _client;
         public bool IsConnected;
 
@@ -112,6 +115,8 @@ namespace RealityVoice
             {
                 while (IsConnected)
                 {
+                    Debug.WriteLine("Status: " + IsSpeaking);
+
                     var message = _client.ReadMessage();
                     if (message != null)
                     {
@@ -187,13 +192,8 @@ namespace RealityVoice
             }
         }
 
-        private void CaptureCallback(IAsyncResult ar)
+        private void HandleVoiceActivation()
         {
-            if (!_capture.CanRead) return;
-            if (!IsConnected) return;
-
-            var read = _capture.EndRead(ar);
-
             float volume = 0;
             for (int i = 0; i < _readBuffer.Length; i += 2)
             {
@@ -204,7 +204,22 @@ namespace RealityVoice
             }
             volume *= 10;
 
-            if ((Math.Abs(volume - _lastVolume) > 0.03) || volume > 0.5)
+            IsSpeaking = (Math.Abs(volume - _lastVolume) > 0.03) || volume > 0.5;
+
+            _lastVolume = volume;
+        }
+
+        private void CaptureCallback(IAsyncResult ar)
+        {
+            if (!_capture.CanRead) return;
+            if (!IsConnected) return;
+
+            var read = _capture.EndRead(ar);
+
+            if(SelectedSpeakMode == SpeakMode.VoiceActivation)
+                HandleVoiceActivation();
+
+            if (IsSpeaking)
             {
 #if DEBUG
                 Console.WriteLine(_readBuffer.Length);
@@ -218,7 +233,6 @@ namespace RealityVoice
             }
 
             _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
-            _lastVolume = volume;
         }
 
     }

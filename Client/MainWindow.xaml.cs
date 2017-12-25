@@ -14,19 +14,39 @@ namespace RealityVoice
     public partial class MainWindow : MetroWindow
     {
 
-        public SpeakMode SelectedSpeakMode { get; set; } = SpeakMode.VoiceActivation;
-
         private Voice _voice;
+        private KeyboardListener _listener = new KeyboardListener();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            _listener.KeyDown += OnGlobalKeyDown;
+            _listener.KeyUp += OnGlobalKeyUp;
+
             
             _voice = new Voice();
             _voice.OnStatusChanged += OnStatusChanged;
             _voice.OnPlayerJoined += OnPlayerJoined;
 
             _voice.Start();
+            
+        }
+
+        private void OnGlobalKeyDown(object sender, RawKeyEventArgs e)
+        {
+            if (e.Key == Key.B && _voice?.SelectedSpeakMode == SpeakMode.PushToTalk)
+            {
+                _voice.IsSpeaking = true;
+            }
+        }
+
+        private void OnGlobalKeyUp(object sender, RawKeyEventArgs e)
+        {
+            if (e.Key == Key.B && _voice?.SelectedSpeakMode == SpeakMode.PushToTalk)
+            {
+                _voice.IsSpeaking = false;
+            }
         }
 
         private void OnPlayerJoined(Player player)
@@ -91,6 +111,7 @@ namespace RealityVoice
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
             _voice?.Disconnect();
+            _listener.Dispose();
         }
 
         private void PreviewPortInput(object sender, TextCompositionEventArgs e)
@@ -106,12 +127,15 @@ namespace RealityVoice
 
         private void OnSelectVoiceActivation(object sender, RoutedEventArgs e)
         {
-            SelectedSpeakMode = SpeakMode.VoiceActivation;
+            if (_voice == null) return;
+            _voice.SelectedSpeakMode = SpeakMode.VoiceActivation;
         }
 
         private void OnSelectPushToTalk(object sender, RoutedEventArgs e)
         {
-            SelectedSpeakMode = SpeakMode.PushToTalk;
+            if (_voice == null) return;
+            _voice.SelectedSpeakMode = SpeakMode.PushToTalk;
         }
+
     }
 }
