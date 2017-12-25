@@ -14,6 +14,8 @@ namespace RealityVoice
     public partial class MainWindow : MetroWindow
     {
 
+        public SpeakMode SelectedSpeakMode { get; set; } = SpeakMode.VoiceActivation;
+
         private Voice _voice;
 
         public MainWindow()
@@ -100,6 +102,16 @@ namespace RealityVoice
         {
             Regex regex = new Regex("[^0-9.-]+");
             return !regex.IsMatch(text);
+        }
+
+        private void OnSelectVoiceActivation(object sender, RoutedEventArgs e)
+        {
+            SelectedSpeakMode = SpeakMode.VoiceActivation;
+        }
+
+        private void OnSelectPushToTalk(object sender, RoutedEventArgs e)
+        {
+            SelectedSpeakMode = SpeakMode.PushToTalk;
         }
     }
 }
