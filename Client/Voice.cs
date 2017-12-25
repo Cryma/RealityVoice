@@ -115,8 +115,6 @@ namespace RealityVoice
             {
                 while (IsConnected)
                 {
-                    Debug.WriteLine("Status: " + IsSpeaking);
-
                     var message = _client.ReadMessage();
                     if (message != null)
                     {
