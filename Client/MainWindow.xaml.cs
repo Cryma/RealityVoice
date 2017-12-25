@@ -110,6 +110,16 @@ namespace RealityVoice
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
+            int port;
+            if (!int.TryParse(PortField.Text, out port))
+                port = 1234;
+
+
+            Properties.Settings.Default.IP = IPField.Text;
+            Properties.Settings.Default.Port = port;
+
+            Properties.Settings.Default.Save();
+
             _voice?.Disconnect();
             _listener.Dispose();
         }

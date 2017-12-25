@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:properties="clr-namespace:RealityVoice.Properties"
         xmlns:realityVoice="clr-namespace:RealityVoice"
         mc:Ignorable="d"
         Closing="OnWindowClosing"
+        DataContext="{x:Static properties:Settings.Default}"
         Title="Voice-Chat" TitleForeground="White" Height="222.25" Width="390" ResizeMode="NoResize" Background="White">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
@@ -67,10 +69,10 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="Port" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="2424" Grid.ColumnSpan="2"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="{Binding Port}" Grid.ColumnSpan="2"/>
 
                     <Label Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="IP Address" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="4,5,1,0" Name="IPField" FontSize="14" Text="127.0.0.1"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="4,5,1,0" Name="IPField" FontSize="14" Text="{Binding IP}"/>
 
                     <Label Grid.Row="2" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="Push-To-Talk" />
                     <Button Grid.Row="2" Grid.Column="1" IsEnabled="False" Margin="4,5,1,0" Content="B" />

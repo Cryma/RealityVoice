@@ -78,6 +78,7 @@
     <Compile Include="Player.cs" />
     <Compile Include="VoiceMode.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Voice.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
