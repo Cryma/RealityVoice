@@ -12,7 +12,7 @@
         <StatusBar DockPanel.Dock="Bottom" Background="#FF007ACC">
             <WrapPanel>
                 <StatusBarItem>
-                    <TextBlock Name="StatusLabel" Width="195" Foreground="White">Status: Bereit zum verbinden</TextBlock>
+                    <TextBlock Name="StatusLabel" Width="195" Foreground="White">Status: Ready</TextBlock>
                 </StatusBarItem>
                 <StatusBarItem>
                     
