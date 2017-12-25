@@ -18,12 +18,12 @@ namespace GTMP_Test_Resource
 
         private void _server_OnVoicePlayerDisconnected(Client player)
         {
-            API.consoleOutput("Player " + player.name + " connected with voice");
+            API.consoleOutput("Player " + player.name + " disconnected with voice");
         }
 
         private void _server_OnVoicePlayerConnected(Client player)
         {
-            API.consoleOutput("Player " + player.name + " disconnected with voice");
+            API.consoleOutput("Player " + player.name + " connected with voice");
         }
 
         private void _server_OnTokenGenerated(VoiceChat.EventArguments.VoiceConnectedEventArgs eventArgs)
