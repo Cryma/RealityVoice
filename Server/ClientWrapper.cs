@@ -10,8 +10,9 @@ namespace VoiceChat
         public Vector3 OldPosition;
         public Vector3 OldCamera;
 
-        public ClientWrapper(Client client, int ID)
+        public ClientWrapper(Client client, int id)
         {
+            this.ID = id;
             this.Client = client;
 
             OldPosition = new Vector3();
