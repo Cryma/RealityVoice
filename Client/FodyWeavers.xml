@@ -1,4 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Weavers>
-  <Costura />
+  <Costura>
+    <Unmanaged32Assemblies>
+      OpenAL32
+    </Unmanaged32Assemblies>
+  </Costura>
 </Weavers>
