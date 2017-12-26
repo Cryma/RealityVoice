@@ -15,16 +15,57 @@ namespace RealityVoice
     {
 
         private Voice _voice;
+        private KeyboardListener _listener = new KeyboardListener();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            LoadSettings();
+
+            _listener.KeyDown += OnGlobalKeyDown;
+            _listener.KeyUp += OnGlobalKeyUp;
+
             
             _voice = new Voice();
             _voice.OnStatusChanged += OnStatusChanged;
             _voice.OnPlayerJoined += OnPlayerJoined;
 
             _voice.Start();
+            
+        }
+
+        private void LoadSettings()
+        {
+            switch (Properties.Settings.Default.VoiceMode)
+            {
+                case VoiceMode.VoiceActivation:
+                    VoiceActivationRadio.IsChecked = true;
+                    OnSelectVoiceActivation(null, null);
+                    break;
+                case VoiceMode.PushToTalk:
+                    PushToTalkRadio.IsChecked = true;
+                    OnSelectPushToTalk(null, null);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void OnGlobalKeyDown(object sender, RawKeyEventArgs e)
+        {
+            if (e.Key == Key.B && _voice?.SelectedVoiceMode == VoiceMode.PushToTalk)
+            {
+                _voice.IsSpeaking = true;
+            }
+        }
+
+        private void OnGlobalKeyUp(object sender, RawKeyEventArgs e)
+        {
+            if (e.Key == Key.B && _voice?.SelectedVoiceMode == VoiceMode.PushToTalk)
+            {
+                _voice.IsSpeaking = false;
+            }
         }
 
         private void OnPlayerJoined(Player player)
@@ -88,7 +129,20 @@ namespace RealityVoice
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
+            int port;
+            if (!int.TryParse(PortField.Text, out port))
+                port = 1234;
+
+            var voiceMode = _voice == null ? Properties.Settings.Default.VoiceMode : _voice.SelectedVoiceMode;
+
+            Properties.Settings.Default.IP = IPField.Text;
+            Properties.Settings.Default.Port = port;
+            Properties.Settings.Default.VoiceMode = voiceMode;
+
+            Properties.Settings.Default.Save();
+
             _voice?.Disconnect();
+            _listener.Dispose();
         }
 
         private void PreviewPortInput(object sender, TextCompositionEventArgs e)
@@ -101,5 +155,18 @@ namespace RealityVoice
             Regex regex = new Regex("[^0-9.-]+");
             return !regex.IsMatch(text);
         }
+
+        private void OnSelectVoiceActivation(object sender, RoutedEventArgs e)
+        {
+            if (_voice == null) return;
+            _voice.SelectedVoiceMode = VoiceMode.VoiceActivation;
+        }
+
+        private void OnSelectPushToTalk(object sender, RoutedEventArgs e)
+        {
+            if (_voice == null) return;
+            _voice.SelectedVoiceMode = VoiceMode.PushToTalk;
+        }
+
     }
 }

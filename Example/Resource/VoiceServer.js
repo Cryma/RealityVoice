@@ -1,3 +1,5 @@
+var oldCamera = null;
+
 API.onServerEventTrigger.connect(function (eventName, args) {
     if (eventName === 'voiceInit') {
         initialize();
@@ -5,13 +7,18 @@ API.onServerEventTrigger.connect(function (eventName, args) {
 });
 
 function initialize() {
-    API.displaySubtitle("Initialized!");
+    oldCamera = API.getGameplayCamDir();
+    API.displaySubtitle("Initialized!", 1000);
     API.startCoroutine(sendData);
 }
 
 function* sendData() {
     while (true) {
         yield 250;
-        API.triggerServerEvent("voiceCam", API.getGameplayCamDir());
+        var cam = API.getGameplayCamDir();
+        if (cam !== oldCamera) { // I don't think this is working
+            API.triggerServerEvent("voiceCam", cam);
+            oldCamera = cam;
+        }
     }
 }
