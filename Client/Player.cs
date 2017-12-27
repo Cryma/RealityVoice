@@ -24,7 +24,7 @@ namespace RealityVoice
 
         public void UpdateOrientation(Vector3 orientation)
         {
-            Playback.Listener.Orientation.SetAt(orientation);
+            Playback.Listener.Orientation = new Orientation(orientation, new Vector3(0f, 1f, 0f));
         }
 
         public void PlayVoice(byte[] data)
