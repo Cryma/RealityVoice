@@ -15,6 +15,8 @@ namespace RealityVoice
         public const uint SampleRate = 24000;
         public const int StreamSize = 1600;
 
+        public static int Volume = Properties.Settings.Default.Volume;
+
         public List<Player> Players = new List<Player>();
 
         public VoiceMode SelectedVoiceMode = VoiceMode.VoiceActivation;
@@ -61,6 +63,13 @@ namespace RealityVoice
 
             _client = new NetClient(config);
             _client.Start();
+        }
+
+        public void ChangeVolume(int volume)
+        {
+            Voice.Volume = volume;
+            foreach(var player in Players)
+                player.Playback.SetVolume(volume / 100f);
         }
 
         public void Connect(string ip, int port, string token)

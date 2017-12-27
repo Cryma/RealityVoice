@@ -15,8 +15,9 @@ Um RealityVoice serverseitig zu nutzen, muss es einen Verweis zu VoiceChat.dll g
   - [ ] Network-Messages reduzieren
 		@root / 24.12.2017
 		Rework angefangen. Netzwerk last verringert. 
-  - [ ] ~~Push-to-talk~~ / Bessere Voice-Erkennung
-  - [ ] Lautstärkeregler
+  - [ ] Bessere Voice-Erkennung
+  - [X] Push-to-talk
+  - [X] Lautstärkeregler
 
 # Genutze Libraries
   * [OpenAL.NET](https://github.com/DevJohnC/OpenAL.NET/) ([MIT](https://github.com/DevJohnC/OpenAL.NET/blob/master/mit);[LGPLv2](https://github.com/DevJohnC/OpenAL.NET/blob/master/lgpl))
