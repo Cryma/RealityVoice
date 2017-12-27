@@ -43,7 +43,7 @@ namespace RealityVoice
             Playback.ALPosition = new Vector3(0f, 0f, 0f);
             Playback.Velocity = new Vector3(0f, 0f, 0f);
 
-            Playback.SetVolume(200f);
+            Playback.SetVolume(Voice.Volume * 4);
         }
 
     }

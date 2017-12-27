@@ -15,6 +15,8 @@ namespace RealityVoice
         public const uint SampleRate = 24000;
         public const int StreamSize = 1600;
 
+        public static int Volume = Properties.Settings.Default.Volume;
+
         public List<Player> Players = new List<Player>();
 
         public VoiceMode SelectedVoiceMode = VoiceMode.VoiceActivation;

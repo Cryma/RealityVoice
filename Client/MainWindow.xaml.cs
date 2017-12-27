@@ -138,6 +138,7 @@ namespace RealityVoice
             Properties.Settings.Default.IP = IPField.Text;
             Properties.Settings.Default.Port = port;
             Properties.Settings.Default.VoiceMode = voiceMode;
+            Properties.Settings.Default.Volume = Convert.ToInt32(VolumeSlider.Value);
 
             Properties.Settings.Default.Save();
 
@@ -168,5 +169,9 @@ namespace RealityVoice
             _voice.SelectedVoiceMode = VoiceMode.PushToTalk;
         }
 
+        private void OnSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Voice.Volume = Convert.ToInt32(e.NewValue);
+        }
     }
 }

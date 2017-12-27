@@ -77,7 +77,9 @@
                     <TextBox Grid.Row="0" Grid.Column="3" Controls:TextBoxHelper.Watermark="IP Address" Margin="4,5,1,0" Name="IPField" FontSize="14" Text="{Binding IP}"/>
 
                     <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="16" VerticalAlignment="Center" Content="Master Volume:" />
-                    <Slider Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Name="VolumeSlider" VerticalAlignment="Center" Value="50" Maximum="100" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" ToolTipService.ToolTip="{Binding Path=Value, ElementName=VolumeSlider}"></Slider>
+                    <Slider Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Name="VolumeSlider" VerticalAlignment="Center" Value="{Binding Volume}"
+                            Maximum="100" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1"
+                            ToolTipService.ToolTip="{Binding Path=Value, ElementName=VolumeSlider}" ValueChanged="OnSliderValueChanged" />
                     
                     <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontSize="16" VerticalAlignment="Center" Content="Push-To-Talk Key:" />
                     <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" IsEnabled="False" Margin="4,5,1,0" Content="B" />
