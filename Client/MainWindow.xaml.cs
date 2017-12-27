@@ -171,7 +171,7 @@ namespace RealityVoice
 
         private void OnSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Voice.Volume = Convert.ToInt32(e.NewValue);
+            _voice?.ChangeVolume(Convert.ToInt32(e.NewValue));
         }
     }
 }

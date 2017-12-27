@@ -65,6 +65,13 @@ namespace RealityVoice
             _client.Start();
         }
 
+        public void ChangeVolume(int volume)
+        {
+            Voice.Volume = volume;
+            foreach(var player in Players)
+                player.Playback.SetVolume(volume / 100f);
+        }
+
         public void Connect(string ip, int port, string token)
         {
             if (IsConnected) return;
