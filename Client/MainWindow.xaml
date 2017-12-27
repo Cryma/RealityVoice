@@ -41,7 +41,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Secret Token</Label>
-                    <PasswordBox Controls:TextBoxHelper.Watermark="Your secret token" Grid.Row="0" Grid.Column="1" Margin="5,5,1,0" Name="SecretField" FontSize="14"></PasswordBox>
+                    <PasswordBox Controls:TextBoxHelper.Watermark="Your secret token" Grid.Row="0" Grid.Column="1" Margin="5,5,1,0" Name="SecretField" FontSize="14"/>
 
                     <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">Speakmode</Label>
                     <WrapPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -64,18 +64,23 @@
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
                         <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="285"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="135"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="Port" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="{Binding Port}" Grid.ColumnSpan="2"/>
+                    <Label Grid.Row="0" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="Port:" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Controls:TextBoxHelper.Watermark="Port" PreviewTextInput="PreviewPortInput" Margin="4,5,1,0" Name="PortField" FontSize="14" Text="{Binding Port}"/>
 
-                    <Label Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="IP Address" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Controls:TextBoxHelper.Watermark="IP Address" Margin="4,5,1,0" Name="IPField" FontSize="14" Text="{Binding IP}"/>
+                    <Label Grid.Row="0" Grid.Column="2" FontSize="16" VerticalAlignment="Center" Content="IP Address:" HorizontalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="3" Controls:TextBoxHelper.Watermark="IP Address" Margin="4,5,1,0" Name="IPField" FontSize="14" Text="{Binding IP}"/>
 
-                    <Label Grid.Row="2" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Content="Push-To-Talk" />
-                    <Button Grid.Row="2" Grid.Column="1" IsEnabled="False" Margin="4,5,1,0" Content="B" />
+                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="16" VerticalAlignment="Center" Content="Master Volume:" />
+                    <Slider Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Name="VolumeSlider" VerticalAlignment="Center" Value="50" Maximum="100" AutoToolTipPlacement="BottomRight" IsSnapToTickEnabled="True" TickFrequency="1" ToolTipService.ToolTip="{Binding Path=Value, ElementName=VolumeSlider}"></Slider>
+                    
+                    <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontSize="16" VerticalAlignment="Center" Content="Push-To-Talk Key:" />
+                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" IsEnabled="False" Margin="4,5,1,0" Content="B" />
                 </Grid>
             </Controls:MetroTabItem>
         </Controls:MetroTabControl>
