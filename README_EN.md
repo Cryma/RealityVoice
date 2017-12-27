@@ -13,8 +13,9 @@ To use RealityVoice on the serverside, a reference to VoiceChat.dll
   - [ ] Reduce network messages
 		@root / 24.12.2017
 		Rework started. Network traffic reduced
-  - [ ] ~~Push-to-talk~~ / Improved voice recognition
-  - [ ] Volume-controls
+  - [ ] Improve voice recognition
+  - [X] Push-to-talk
+  - [X] Volume-controls
 
 # Used libraries
   * [OpenAL.NET](https://github.com/DevJohnC/OpenAL.NET/) ([MIT](https://github.com/DevJohnC/OpenAL.NET/blob/master/mit);[LGPLv2](https://github.com/DevJohnC/OpenAL.NET/blob/master/lgpl))
