@@ -50,6 +50,9 @@
     <Reference Include="OpenAL.NET">
       <HintPath>..\libs\OpenAL.NET.dll</HintPath>
     </Reference>
+    <Reference Include="OpusWrapper">
+      <HintPath>..\libs\OpusWrapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -125,6 +128,9 @@
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
     <EmbeddedResource Include="costura32\OpenAL32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="costura32\opus.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets" Condition="Exists('..\packages\Fody.2.0.0\build\netstandard1.4\Fody.targets')" />

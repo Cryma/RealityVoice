@@ -6,6 +6,8 @@ using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 using System.Threading;
 using System.Diagnostics;
+using FragLabs.Audio.Codecs;
+using FragLabs.Audio.Codecs.Opus;
 
 namespace RealityVoice
 {
@@ -13,7 +15,7 @@ namespace RealityVoice
     {
 
         public const uint SampleRate = 24000;
-        public const int StreamSize = 1600;
+        public const int StreamSize = 960 * 2;
 
         public static int Volume = Properties.Settings.Default.Volume;
 
@@ -27,6 +29,10 @@ namespace RealityVoice
 
         private byte[] _readBuffer;
         private Stream _capture;
+
+        private OpusDecoder _decoder;
+        private OpusEncoder _encoder;
+        private int _bytesPerSegment;
 
         private Thread _updateThread;
 
@@ -45,16 +51,16 @@ namespace RealityVoice
             OnPlayerJoined?.Invoke(player);
         }
 
-        private void InvokeOnStatusChanged(NetConnectionStatus status, string reason = "")
-        {
-            OnStatusChanged?.Invoke(status, reason);
-        }
-
         #endregion
 
         public Voice()
         {
             OnStatusChanged += EventOnStatusChanged;
+
+            _decoder = OpusDecoder.Create((int)SampleRate, 1);
+            _encoder = OpusEncoder.Create((int)SampleRate, 1, Application.Voip);
+            _encoder.Bitrate = 8192 * 2;
+            _bytesPerSegment = _encoder.FrameByteCount(StreamSize);
         }
 
         public void Start()
@@ -83,7 +89,7 @@ namespace RealityVoice
 
             _readBuffer = new byte[StreamSize];
 
-            _capture = OpenALHelper.CaptureDevices[0].OpenStream((int)SampleRate, OpenALAudioFormat.Mono16Bit, 10);
+            _capture = OpenALHelper.CaptureDevices[0].OpenStream((int)SampleRate, OpenALAudioFormat.Mono16Bit, 50);
             _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
 
             if(_updateThread == null || _updateThread.ThreadState == System.Threading.ThreadState.Aborted || _updateThread.ThreadState == System.Threading.ThreadState.Stopped)
@@ -100,22 +106,21 @@ namespace RealityVoice
             if (!IsConnected) return;
 
             _client.Disconnect("");
-            IsConnected = false;
 
-            if (_updateThread.IsAlive)
-            {
-                try
-                {
-                    _updateThread.Join(1000);
-                    if (_updateThread.IsAlive)
-                        _updateThread.Abort();
-                }
-                catch (ThreadAbortException) { }
-                catch(Exception ex)
-                {
-                    Debug.WriteLine($"Error trying to stop update queue: {ex}");
-                }
-            }
+            //if (_updateThread.IsAlive)
+            //{
+            //    try
+            //    {
+            //        _updateThread.Join(1000);
+            //        if (_updateThread.IsAlive)
+            //            _updateThread.Abort();
+            //    }
+            //    catch (ThreadAbortException) { }
+            //    catch(Exception ex)
+            //    {
+            //        Debug.WriteLine($"Error trying to stop update queue: {ex}");
+            //    }
+            //}
         }
 
         public void Update()
@@ -131,7 +136,8 @@ namespace RealityVoice
                         {
                             var netConnection = (NetConnectionStatus)message.ReadByte();
                             var reason = message.ReadString();
-                            InvokeOnStatusChanged(netConnection, reason);
+
+                            OnStatusChanged?.Invoke(netConnection, reason);
                         }
                         else if (message.MessageType == NetIncomingMessageType.Data)
                         {
@@ -148,7 +154,9 @@ namespace RealityVoice
                             if (type == 1)
                             {
                                 int size = message.ReadInt32();
-                                byte[] readBuffer = message.ReadBytes(size);
+                                int len;
+                                byte[] readBuffer = _decoder.Decode(message.ReadBytes(size), size, out len);
+
                                 var id = message.ReadInt32();
 
                                 var player = Players.Find(p => p.ID == id);
@@ -231,10 +239,16 @@ namespace RealityVoice
 #if DEBUG
                 Console.WriteLine(_readBuffer.Length);
 #endif
+                
+                int len;
+                var encoded = _encoder.Encode(_readBuffer, _readBuffer.Length, out len);
+
                 var message = _client.CreateMessage();
                 message.Write((byte)0x01);
-                message.Write(_readBuffer.Length);
-                message.Write(_readBuffer);
+                //message.Write(_readBuffer.Length);
+                //message.Write(_readBuffer);
+                message.Write(len);
+                message.Write(encoded);
 
                 _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }

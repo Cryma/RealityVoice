@@ -3,6 +3,7 @@
   <Costura>
     <Unmanaged32Assemblies>
       OpenAL32
+      opus
     </Unmanaged32Assemblies>
   </Costura>
 </Weavers>

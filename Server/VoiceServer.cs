@@ -6,6 +6,7 @@ using Lidgren.Network;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -64,6 +65,16 @@ namespace VoiceChat
 
             API.onPlayerConnected += GameOnPlayerConnected;
             API.onClientEventTrigger += GameOnClientEventTrigger;
+            API.onPlayerDisconnected += GameOnPlayerDisconnected;
+        }
+
+        private void GameOnPlayerDisconnected(Client player, string reason)
+        {
+            if (player.getData("voice_connection") != null)
+            {
+                var connection = (NetConnection) player.getData("voice_connection");
+                connection.Disconnect("Left server");
+            }
         }
 
         private void GameOnClientEventTrigger(Client sender, string eventName, params object[] arguments)
@@ -284,6 +295,8 @@ namespace VoiceChat
             connection.Approve();
             _connectedPlayers.AddOrUpdate(connection, clientWrapper, (con, cli) => clientWrapper);
 
+            client.setData("voice_connection", connection);
+
             var task = new Task(delegate
             {
                 Thread.Sleep(500); //Why the delay?
@@ -318,6 +331,9 @@ namespace VoiceChat
             {
                 if (_usedIDs.Contains(client.ID))
                     _usedIDs.Add(client.ID);
+
+                client.Client.setData("voice_connection", null);
+
                 OnVoicePlayerDisconnected?.Invoke(client.Client);
             }
         }

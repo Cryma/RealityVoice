@@ -17,11 +17,14 @@ namespace RealityVoice
         private Voice _voice;
         private KeyboardListener _listener = new KeyboardListener();
 
+        private NetConnectionStatus _currentStatus = NetConnectionStatus.Disconnected;
+
         public MainWindow()
         {
-            InitializeComponent();
+            // Temporarily forced VoiceActivion as PushToTalk is disabled
+            Properties.Settings.Default.VoiceMode = VoiceMode.VoiceActivation;
 
-            LoadSettings();
+            InitializeComponent();
 
             _listener.KeyDown += OnGlobalKeyDown;
             _listener.KeyUp += OnGlobalKeyUp;
@@ -32,7 +35,8 @@ namespace RealityVoice
             _voice.OnPlayerJoined += OnPlayerJoined;
 
             _voice.Start();
-            
+
+            LoadSettings();
         }
 
         private void LoadSettings()
@@ -78,15 +82,22 @@ namespace RealityVoice
 
         private void OnStatusChanged(NetConnectionStatus status, string reason)
         {
+            _currentStatus = status;
+
             Dispatcher.Invoke(() =>
             {
+                if (status == NetConnectionStatus.Disconnected)
+                {
+                    InteractionButton.Content = "Connect";
+                    PlayerLabel.Text = "";
+                }
+                else
+                {
+                    InteractionButton.Content = "Disconnect";
+                }
+
                 StatusLabel.Text = String.IsNullOrWhiteSpace(reason) ? $"Status: {status}" : $"Status: {status} - {reason}";
             });
-
-            if (status == NetConnectionStatus.Disconnected)
-            {
-                HandleDisconnect();
-            }
         }
 
 
@@ -94,10 +105,11 @@ namespace RealityVoice
         {
             if (_voice == null) return;
 
-            if (_voice.IsConnected)
-                HandleDisconnect();
+
+            if (_currentStatus == NetConnectionStatus.Disconnected)
+                HandleConnect();
             else
-                HandleConnect();               
+                HandleDisconnect();
         }
 
         private void HandleConnect()
@@ -106,25 +118,14 @@ namespace RealityVoice
             if (!int.TryParse(PortField.Text, out port))
                 return;
 
-            if (!_voice.IsConnected)
+            if (_currentStatus == NetConnectionStatus.Disconnected)
                 _voice.Connect(IPField.Text, port, SecretField.Password);
-
-            Dispatcher.Invoke(() =>
-            {
-                InteractionButton.Content = "Disconnect";
-            });
         }
 
         private void HandleDisconnect()
         {
-            if(_voice.IsConnected)
+            if(_currentStatus != NetConnectionStatus.Disconnected)
                 _voice.Disconnect();
-
-            Dispatcher.Invoke(() =>
-            {
-                InteractionButton.Content = "Connect";
-                PlayerLabel.Text = "";
-            });
         }
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
