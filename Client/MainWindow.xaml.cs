@@ -21,9 +21,10 @@ namespace RealityVoice
 
         public MainWindow()
         {
-            InitializeComponent();
+            // Temporarily forced VoiceActivion as PushToTalk is disabled
+            Properties.Settings.Default.VoiceMode = VoiceMode.VoiceActivation;
 
-            LoadSettings();
+            InitializeComponent();
 
             _listener.KeyDown += OnGlobalKeyDown;
             _listener.KeyUp += OnGlobalKeyUp;
@@ -34,7 +35,8 @@ namespace RealityVoice
             _voice.OnPlayerJoined += OnPlayerJoined;
 
             _voice.Start();
-            
+
+            LoadSettings();
         }
 
         private void LoadSettings()
