@@ -19,4 +19,5 @@ To use RealityVoice on the serverside, a reference to VoiceChat.dll
 
 # Used libraries
   * [OpenAL.NET](https://github.com/DevJohnC/OpenAL.NET/) ([MIT](https://github.com/DevJohnC/OpenAL.NET/blob/master/mit);[LGPLv2](https://github.com/DevJohnC/OpenAL.NET/blob/master/lgpl))
+  * [Opus.NET](https://github.com/DevJohnC/Opus.NET) ([MIT](https://github.com/DevJohnC/Opus.NET/blob/master/license.txt))
   * [Lidgren](https://github.com/lidgren/lidgren-network-gen3/) ([MIT](https://github.com/lidgren/lidgren-network-gen3/blob/master/LICENSE))
