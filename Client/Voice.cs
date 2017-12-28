@@ -6,6 +6,8 @@ using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 using System.Threading;
 using System.Diagnostics;
+using FragLabs.Audio.Codecs;
+using FragLabs.Audio.Codecs.Opus;
 
 namespace RealityVoice
 {
@@ -27,6 +29,10 @@ namespace RealityVoice
 
         private byte[] _readBuffer;
         private Stream _capture;
+
+        private OpusDecoder _decoder;
+        private OpusEncoder _encoder;
+        private int _bytesPerSegment;
 
         private Thread _updateThread;
 
@@ -50,6 +56,11 @@ namespace RealityVoice
         public Voice()
         {
             OnStatusChanged += EventOnStatusChanged;
+
+            _decoder = OpusDecoder.Create((int)SampleRate, 1);
+            _encoder = OpusEncoder.Create((int)SampleRate, 1, Application.Voip);
+            _encoder.Bitrate = 8192 * 2;
+            _bytesPerSegment = _encoder.FrameByteCount(StreamSize);
         }
 
         public void Start()
@@ -143,7 +154,9 @@ namespace RealityVoice
                             if (type == 1)
                             {
                                 int size = message.ReadInt32();
-                                byte[] readBuffer = message.ReadBytes(size);
+                                int len;
+                                byte[] readBuffer = _decoder.Decode(message.ReadBytes(size), size, out len);
+
                                 var id = message.ReadInt32();
 
                                 var player = Players.Find(p => p.ID == id);
@@ -226,10 +239,16 @@ namespace RealityVoice
 #if DEBUG
                 Console.WriteLine(_readBuffer.Length);
 #endif
+                
+                int len;
+                var encoded = _encoder.Encode(_readBuffer, _readBuffer.Length, out len);
+
                 var message = _client.CreateMessage();
                 message.Write((byte)0x01);
-                message.Write(_readBuffer.Length);
-                message.Write(_readBuffer);
+                //message.Write(_readBuffer.Length);
+                //message.Write(_readBuffer);
+                message.Write(len);
+                message.Write(encoded);
 
                 _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
             }
