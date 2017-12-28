@@ -13,7 +13,7 @@ namespace RealityVoice
     {
 
         public const uint SampleRate = 24000;
-        public const int StreamSize = 1600;
+        public const int StreamSize = 960 * 2;
 
         public static int Volume = Properties.Settings.Default.Volume;
 
@@ -78,7 +78,7 @@ namespace RealityVoice
 
             _readBuffer = new byte[StreamSize];
 
-            _capture = OpenALHelper.CaptureDevices[0].OpenStream((int)SampleRate, OpenALAudioFormat.Mono16Bit, 10);
+            _capture = OpenALHelper.CaptureDevices[0].OpenStream((int)SampleRate, OpenALAudioFormat.Mono16Bit, 50);
             _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
 
             if(_updateThread == null || _updateThread.ThreadState == System.Threading.ThreadState.Aborted || _updateThread.ThreadState == System.Threading.ThreadState.Stopped)
