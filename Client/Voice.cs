@@ -45,11 +45,6 @@ namespace RealityVoice
             OnPlayerJoined?.Invoke(player);
         }
 
-        private void InvokeOnStatusChanged(NetConnectionStatus status, string reason = "")
-        {
-            OnStatusChanged?.Invoke(status, reason);
-        }
-
         #endregion
 
         public Voice()
@@ -100,22 +95,21 @@ namespace RealityVoice
             if (!IsConnected) return;
 
             _client.Disconnect("");
-            IsConnected = false;
 
-            if (_updateThread.IsAlive)
-            {
-                try
-                {
-                    _updateThread.Join(1000);
-                    if (_updateThread.IsAlive)
-                        _updateThread.Abort();
-                }
-                catch (ThreadAbortException) { }
-                catch(Exception ex)
-                {
-                    Debug.WriteLine($"Error trying to stop update queue: {ex}");
-                }
-            }
+            //if (_updateThread.IsAlive)
+            //{
+            //    try
+            //    {
+            //        _updateThread.Join(1000);
+            //        if (_updateThread.IsAlive)
+            //            _updateThread.Abort();
+            //    }
+            //    catch (ThreadAbortException) { }
+            //    catch(Exception ex)
+            //    {
+            //        Debug.WriteLine($"Error trying to stop update queue: {ex}");
+            //    }
+            //}
         }
 
         public void Update()
@@ -131,7 +125,8 @@ namespace RealityVoice
                         {
                             var netConnection = (NetConnectionStatus)message.ReadByte();
                             var reason = message.ReadString();
-                            InvokeOnStatusChanged(netConnection, reason);
+
+                            OnStatusChanged?.Invoke(netConnection, reason);
                         }
                         else if (message.MessageType == NetIncomingMessageType.Data)
                         {
