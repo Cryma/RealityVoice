@@ -84,6 +84,16 @@ namespace RealityVoice
 
             Dispatcher.Invoke(() =>
             {
+                if (status == NetConnectionStatus.Disconnected)
+                {
+                    InteractionButton.Content = "Connect";
+                    PlayerLabel.Text = "";
+                }
+                else
+                {
+                    InteractionButton.Content = "Disconnect";
+                }
+
                 StatusLabel.Text = String.IsNullOrWhiteSpace(reason) ? $"Status: {status}" : $"Status: {status} - {reason}";
             });
         }
@@ -108,23 +118,12 @@ namespace RealityVoice
 
             if (_currentStatus == NetConnectionStatus.Disconnected)
                 _voice.Connect(IPField.Text, port, SecretField.Password);
-
-            Dispatcher.Invoke(() =>
-            {
-                InteractionButton.Content = "Disconnect";
-            });
         }
 
         private void HandleDisconnect()
         {
             if(_currentStatus != NetConnectionStatus.Disconnected)
                 _voice.Disconnect();
-
-            Dispatcher.Invoke(() =>
-            {
-                InteractionButton.Content = "Connect";
-                PlayerLabel.Text = "";
-            });
         }
 
         private void OnWindowClosing(object sender, CancelEventArgs e)
