@@ -143,6 +143,9 @@ namespace VoiceChat
                                 {
                                     if (player.getData("voice_token") == token)
                                     {
+                                        if (_connectedPlayers.Values.Count(p => p.Client == player) != 0)
+                                            break;
+
                                         PlayerVoiceConnected(message.SenderConnection, player);
                                         playerFound = true;
                                         break;
@@ -249,6 +252,8 @@ namespace VoiceChat
                 var outMessage = _server.CreateMessage();
                 outMessage.Write((byte)0x01);
 
+                outMessage.Write(sender.ID);
+
                 outMessage.Write(packetAmount);
 
                 foreach (var packet in packets)
@@ -257,8 +262,6 @@ namespace VoiceChat
                     outMessage.Write(packet.DataSize);
                     outMessage.Write(packet.DecodedVoice);
                 }
-
-                outMessage.Write(sender.ID);
 
                 var positionChanged = Math.Abs(relativePosition.DistanceTo(player.Value.OldPosition)) > 0.1;
                 var cameraChanged = Math.Abs(cameraPosition.DistanceTo(player.Value.OldCamera)) > 0.1;
