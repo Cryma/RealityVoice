@@ -143,6 +143,9 @@ namespace VoiceChat
                                 {
                                     if (player.getData("voice_token") == token)
                                     {
+                                        if (_connectedPlayers.Values.Count(p => p.Client == player) != 0)
+                                            break;
+
                                         PlayerVoiceConnected(message.SenderConnection, player);
                                         playerFound = true;
                                         break;
