@@ -142,76 +142,81 @@ namespace RealityVoice
 
                         foreach (var message in messages)
                         {
-                            if (message.MessageType == NetIncomingMessageType.StatusChanged)
+                            try
                             {
-                                var netConnection = (NetConnectionStatus)message.ReadByte();
-                                var reason = message.ReadString();
+                                if (message.MessageType == NetIncomingMessageType.StatusChanged)
+                                {
+                                    var netConnection = (NetConnectionStatus) message.ReadByte();
+                                    var reason = message.ReadString();
 
-                                OnStatusChanged?.Invoke(netConnection, reason);
+                                    OnStatusChanged?.Invoke(netConnection, reason);
+                                }
+                                else if (message.MessageType == NetIncomingMessageType.Data)
+                                {
+                                    byte type = message.ReadByte();
+                                    if (type == 0)
+                                    {
+                                        var id = message.ReadInt32();
+                                        var name = message.ReadString();
+                                        var newPlayer = new Player(name, id);
+
+                                        Players.Add(newPlayer);
+                                        InvokeOnPlayerJoined(newPlayer);
+                                    }
+                                    if (type == 1)
+                                    {
+                                        List<VoicePacket> packets = new List<VoicePacket>();
+
+                                        var id = message.ReadInt32();
+
+                                        var player = Players.Find(p => p.ID == id);
+                                        if (player == null)
+                                            continue;
+
+                                        var packetAmount = message.ReadInt32();
+
+
+                                        for (var i = 0; i < packetAmount; i++)
+                                        {
+                                            int size = message.ReadInt32();
+                                            int dataSize = message.ReadInt32();
+                                            byte[] encoded = message.ReadBytes(size);
+                                            byte[] decoded = _decoder.Decode(encoded, dataSize, out var len);
+
+                                            packets.Add(new VoicePacket(decoded, len));
+                                        }
+
+                                        var toUpdate = message.ReadByte();
+
+                                        if (toUpdate == 1)
+                                        {
+                                            var position = message.ReadVector();
+                                            var direction = message.ReadVector();
+                                            player.UpdatePosition(position);
+                                            player.UpdateOrientation(direction);
+                                        }
+                                        else if (toUpdate == 2)
+                                        {
+                                            var position = message.ReadVector();
+                                            player.UpdatePosition(position);
+                                        }
+                                        else if (toUpdate == 3)
+                                        {
+                                            var direction = message.ReadVector();
+                                            player.UpdateOrientation(direction);
+                                        }
+
+                                        for (var i = 0; i < packetAmount; i++)
+                                        {
+                                            player.PlayVoice(packets[i].EncodedVoice, packets[i].DataSize);
+                                        }
+                                    }
+                                }
                             }
-                            else if (message.MessageType == NetIncomingMessageType.Data)
+                            finally
                             {
-                                byte type = message.ReadByte();
-                                if (type == 0)
-                                {
-                                    var id = message.ReadInt32();
-                                    var name = message.ReadString();
-                                    var newPlayer = new Player(name, id);
-
-                                    Players.Add(newPlayer);
-                                    InvokeOnPlayerJoined(newPlayer);
-                                }
-                                if (type == 1)
-                                {
-                                    List<VoicePacket> packets = new List<VoicePacket>();
-
-                                    var packetAmount = message.ReadInt32();
-
-
-                                    for (var i = 0; i < packetAmount; i++)
-                                    {
-                                        int size = message.ReadInt32();
-                                        int dataSize = message.ReadInt32();
-                                        byte[] encoded = message.ReadBytes(size);
-                                        byte[] decoded = _decoder.Decode(encoded, dataSize, out var len);
-
-                                        packets.Add(new VoicePacket(decoded, len));
-                                    }
-
-                                    var id = message.ReadInt32();
-
-                                    var player = Players.Find(p => p.ID == id);
-                                    if (player == null)
-                                        continue;
-
-                                    var toUpdate = message.ReadByte();
-
-                                    if (toUpdate == 1)
-                                    {
-                                        var position = message.ReadVector();
-                                        var direction = message.ReadVector();
-                                        player.UpdatePosition(position);
-                                        player.UpdateOrientation(direction);
-                                    }
-                                    else if (toUpdate == 2)
-                                    {
-                                        var position = message.ReadVector();
-                                        player.UpdatePosition(position);
-                                    }
-                                    else if (toUpdate == 3)
-                                    {
-                                        var direction = message.ReadVector();
-                                        player.UpdateOrientation(direction);
-                                    }
-
-                                    for (var i = 0; i < packetAmount; i++)
-                                    {
-                                        player.PlayVoice(packets[i].EncodedVoice, packets[i].DataSize);
-                                    }
-                                }
+                                _client.Recycle(message);
                             }
-
-                            _client.Recycle(message);
                         }
 
                     }
