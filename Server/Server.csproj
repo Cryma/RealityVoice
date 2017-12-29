@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="ClientWrapper.cs" />
     <Compile Include="EventArguments\VoiceConnectedEventArgs.cs" />
+    <Compile Include="VoicePacket.cs" />
     <Compile Include="VoiceServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

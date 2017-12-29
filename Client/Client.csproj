@@ -83,6 +83,7 @@
     <Compile Include="Utils.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Voice.cs" />
+    <Compile Include="VoicePacket.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

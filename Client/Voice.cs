@@ -6,6 +6,7 @@ using FragLabs.Audio.Engines.OpenAL;
 using Lidgren.Network;
 using System.Threading;
 using System.Diagnostics;
+using System.Linq;
 using FragLabs.Audio.Codecs;
 using FragLabs.Audio.Codecs.Opus;
 
@@ -29,6 +30,8 @@ namespace RealityVoice
 
         private byte[] _readBuffer;
         private Stream _capture;
+
+        private List<VoicePacket> _packets = new List<VoicePacket>();
 
         private OpusDecoder _decoder;
         private OpusEncoder _encoder;
@@ -153,9 +156,19 @@ namespace RealityVoice
                             }
                             if (type == 1)
                             {
-                                int size = message.ReadInt32();
-                                int len;
-                                byte[] readBuffer = _decoder.Decode(message.ReadBytes(size), size, out len);
+                                List<VoicePacket> packets = new List<VoicePacket>();
+
+                                var packetAmount = message.ReadInt32();
+
+                                for (var i = 0; i < packetAmount; i++)
+                                {
+                                    int size = message.ReadInt32();
+                                    int dataSize = message.ReadInt32();
+                                    byte[] encoded = message.ReadBytes(size);
+                                    byte[] decoded = _decoder.Decode(encoded, dataSize, out var len);
+
+                                    packets.Add(new VoicePacket(decoded, dataSize));
+                                }
 
                                 var id = message.ReadInt32();
 
@@ -182,12 +195,20 @@ namespace RealityVoice
                                     var direction = message.ReadVector();
                                     player.UpdateOrientation(direction);
                                 }
-                                player.PlayVoice(readBuffer);
+
+                                for (var i = 0; i < packetAmount; i++)
+                                {
+                                    player.PlayVoice(packets[i].EncodedVoice);
+                                }
                             }
                         }
 
                         _client.Recycle(message);
                     }
+
+                    if(_packets.Count > 4 || (_packets.Count > 1 && _packets.Last().CreatedAt.AddMilliseconds(50) < DateTime.Now))
+                        SendPackets();
+
                     Thread.Sleep(10);
                 }
             }
@@ -240,20 +261,38 @@ namespace RealityVoice
                 Console.WriteLine(_readBuffer.Length);
 #endif
                 
-                int len;
-                var encoded = _encoder.Encode(_readBuffer, _readBuffer.Length, out len);
+                int length;
+                byte[] encoded = _encoder.Encode(_readBuffer, _readBuffer.Length, out length);
 
-                var message = _client.CreateMessage();
-                message.Write((byte)0x01);
-                //message.Write(_readBuffer.Length);
-                //message.Write(_readBuffer);
-                message.Write(len);
-                message.Write(encoded);
+                _packets.Add(new VoicePacket(encoded, length));
 
-                _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
+                _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
+                return;
+                
             }
 
             _capture.BeginRead(_readBuffer, 0, _readBuffer.Length, CaptureCallback, null);
+        }
+
+        private void SendPackets()
+        {
+            if (_packets.Count < 1) return;
+
+            var message = _client.CreateMessage();
+            message.Write((byte)0x01);
+
+            message.Write(_packets.Count);
+
+            foreach (var packet in _packets)
+            {
+                message.Write(packet.EncodedVoice.Length);
+                message.Write(packet.DataSize);
+                message.Write(packet.EncodedVoice);
+            }
+
+            _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
+
+            _packets = new List<VoicePacket>();
         }
 
     }
