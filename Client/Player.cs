@@ -27,10 +27,10 @@ namespace RealityVoice
             Playback.Listener.Orientation = new Orientation(orientation, new Vector3(0f, 1f, 0f));
         }
 
-        public void PlayVoice(byte[] data)
+        public void PlayVoice(byte[] data, int count)
         {
             if(Playback.CanWrite)
-                Playback.Write(data, 0, Voice.StreamSize);
+                Playback.Write(data, 0, count);
         }
 
         private void CreatePlayback()
