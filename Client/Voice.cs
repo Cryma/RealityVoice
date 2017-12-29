@@ -132,92 +132,109 @@ namespace RealityVoice
             {
                 while (IsConnected)
                 {
-                    var message = _client.ReadMessage();
-                    if (message != null)
+                    Thread.Sleep(10);
+
+                    var messages = new List<NetIncomingMessage>();
+                    var messageCount = _client.ReadMessages(messages);
+
+                    if (messageCount != 0)
                     {
-                        if (message.MessageType == NetIncomingMessageType.StatusChanged)
+
+                        foreach (var message in messages)
                         {
-                            var netConnection = (NetConnectionStatus)message.ReadByte();
-                            var reason = message.ReadString();
-
-                            OnStatusChanged?.Invoke(netConnection, reason);
-                        }
-                        else if (message.MessageType == NetIncomingMessageType.Data)
-                        {
-                            byte type = message.ReadByte();
-                            if (type == 0)
+                            if (message.MessageType == NetIncomingMessageType.StatusChanged)
                             {
-                                var id = message.ReadInt32();
-                                var name = message.ReadString();
-                                var newPlayer = new Player(name, id);
+                                var netConnection = (NetConnectionStatus)message.ReadByte();
+                                var reason = message.ReadString();
 
-                                Players.Add(newPlayer);
-                                InvokeOnPlayerJoined(newPlayer);
+                                OnStatusChanged?.Invoke(netConnection, reason);
                             }
-                            if (type == 1)
+                            else if (message.MessageType == NetIncomingMessageType.Data)
                             {
-                                List<VoicePacket> packets = new List<VoicePacket>();
-
-                                var packetAmount = message.ReadInt32();
-
-                                for (var i = 0; i < packetAmount; i++)
+                                byte type = message.ReadByte();
+                                if (type == 0)
                                 {
-                                    int size = message.ReadInt32();
-                                    int dataSize = message.ReadInt32();
-                                    byte[] encoded = message.ReadBytes(size);
-                                    byte[] decoded = _decoder.Decode(encoded, dataSize, out var len);
+                                    var id = message.ReadInt32();
+                                    var name = message.ReadString();
+                                    var newPlayer = new Player(name, id);
 
-                                    packets.Add(new VoicePacket(decoded, dataSize));
+                                    Players.Add(newPlayer);
+                                    InvokeOnPlayerJoined(newPlayer);
                                 }
-
-                                var id = message.ReadInt32();
-
-                                var player = Players.Find(p => p.ID == id);
-                                if (player == null)
-                                    continue;
-
-                                var toUpdate = message.ReadByte();
-
-                                if (toUpdate == 1)
+                                if (type == 1)
                                 {
-                                    var position = message.ReadVector();
-                                    var direction = message.ReadVector();
-                                    player.UpdatePosition(position);
-                                    player.UpdateOrientation(direction);
-                                }
-                                else if (toUpdate == 2)
-                                {
-                                    var position = message.ReadVector();
-                                    player.UpdatePosition(position);
-                                }
-                                else if (toUpdate == 3)
-                                {
-                                    var direction = message.ReadVector();
-                                    player.UpdateOrientation(direction);
-                                }
+                                    List<VoicePacket> packets = new List<VoicePacket>();
 
-                                for (var i = 0; i < packetAmount; i++)
-                                {
-                                    player.PlayVoice(packets[i].EncodedVoice);
+                                    var packetAmount = message.ReadInt32();
+
+
+                                    for (var i = 0; i < packetAmount; i++)
+                                    {
+                                        int size = message.ReadInt32();
+                                        int dataSize = message.ReadInt32();
+                                        byte[] encoded = message.ReadBytes(size);
+                                        byte[] decoded = _decoder.Decode(encoded, dataSize, out var len);
+
+                                        packets.Add(new VoicePacket(decoded, len));
+                                    }
+
+                                    var id = message.ReadInt32();
+
+                                    var player = Players.Find(p => p.ID == id);
+                                    if (player == null)
+                                        continue;
+
+                                    var toUpdate = message.ReadByte();
+
+                                    if (toUpdate == 1)
+                                    {
+                                        var position = message.ReadVector();
+                                        var direction = message.ReadVector();
+                                        player.UpdatePosition(position);
+                                        player.UpdateOrientation(direction);
+                                    }
+                                    else if (toUpdate == 2)
+                                    {
+                                        var position = message.ReadVector();
+                                        player.UpdatePosition(position);
+                                    }
+                                    else if (toUpdate == 3)
+                                    {
+                                        var direction = message.ReadVector();
+                                        player.UpdateOrientation(direction);
+                                    }
+
+                                    for (var i = 0; i < packetAmount; i++)
+                                    {
+                                        player.PlayVoice(packets[i].EncodedVoice, packets[i].DataSize);
+                                    }
                                 }
                             }
+
+                            _client.Recycle(message);
                         }
 
-                        _client.Recycle(message);
                     }
 
                     if(_packets.Count > 4 || (_packets.Count > 1 && _packets.Last().CreatedAt.AddMilliseconds(50) < DateTime.Now))
                         SendPackets();
-
-                    Thread.Sleep(10);
                 }
             }
             catch (ThreadAbortException) { }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Exception in netcode: {ex}");
-            }
+            //catch (Exception ex)
+            //{
+            //    Debug.WriteLine($"Exception in netcode: {ex}");
+            //}
         }
+
+        public static byte[] Combine(byte[] first, byte[] second)
+        {
+            byte[] ret = new byte[first.Length + second.Length];
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+            Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+            return ret;
+        }
+
 
         private void EventOnStatusChanged(NetConnectionStatus status, string reason)
         {
@@ -283,7 +300,8 @@ namespace RealityVoice
 
             message.Write(_packets.Count);
 
-            foreach (var packet in _packets)
+
+            foreach (var packet in _packets.ToList())
             {
                 message.Write(packet.EncodedVoice.Length);
                 message.Write(packet.DataSize);

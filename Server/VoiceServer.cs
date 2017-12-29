@@ -258,8 +258,8 @@ namespace VoiceChat
                     outMessage.Write(packet.DecodedVoice);
                 }
 
-                outMessage.Write(player.Value.ID);
-            
+                outMessage.Write(sender.ID);
+
                 var positionChanged = Math.Abs(relativePosition.DistanceTo(player.Value.OldPosition)) > 0.1;
                 var cameraChanged = Math.Abs(cameraPosition.DistanceTo(player.Value.OldCamera)) > 0.1;
 
