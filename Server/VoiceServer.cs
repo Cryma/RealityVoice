@@ -221,8 +221,18 @@ namespace VoiceChat
             if (!_connectedPlayers.ContainsKey(message.SenderConnection))
                 return;
 
-            int size = message.ReadInt32();
-            byte[] voiceData = message.ReadBytes(size);
+            List<VoicePacket> packets = new List<VoicePacket>();
+
+            var packetAmount = message.ReadInt32();
+
+            for (var i = 0; i < packetAmount; i++)
+            {
+                var size = message.ReadInt32();
+                var dataSize = message.ReadInt32();
+                byte[] data = message.ReadBytes(size);
+
+                packets.Add(new VoicePacket(data, dataSize));
+            }
 
             var sender = _connectedPlayers[message.SenderConnection];
 
@@ -238,8 +248,15 @@ namespace VoiceChat
 
                 var outMessage = _server.CreateMessage();
                 outMessage.Write((byte)0x01);
-                outMessage.Write(size);
-                outMessage.Write(voiceData);
+
+                outMessage.Write(packetAmount);
+
+                foreach (var packet in packets)
+                {
+                    outMessage.Write(packet.DecodedVoice.Length);
+                    outMessage.Write(packet.DataSize);
+                    outMessage.Write(packet.DecodedVoice);
+                }
 
                 outMessage.Write(player.Value.ID);
             
@@ -255,7 +272,7 @@ namespace VoiceChat
                 else
                 {
                     outMessage.Write((byte)0x00);
-                    _server.SendMessage(outMessage, player.Key, NetDeliveryMethod.UnreliableSequenced);
+                    _server.SendMessage(outMessage, player.Key, NetDeliveryMethod.ReliableOrdered);
                     continue;
                 }
 
@@ -277,7 +294,7 @@ namespace VoiceChat
                     player.Value.OldCamera = cameraPosition;
                 }
 
-                _server.SendMessage(outMessage, player.Key, NetDeliveryMethod.UnreliableSequenced);
+                _server.SendMessage(outMessage, player.Key, NetDeliveryMethod.ReliableOrdered);
             }
         }
 
