@@ -242,13 +242,12 @@ namespace VoiceChat
 
             for (var i = 0; i < packetAmount; i++)
             {
-                var size = message.ReadInt32();
                 var dataSize = message.ReadInt32();
-                byte[] data = message.ReadBytes(size);
-
+                byte[] data = message.ReadBytes(dataSize);
+                
                 packets.Add(new VoicePacket(data, dataSize));
             }
-
+            
             var sender = _connectedPlayers[message.SenderConnection];
 
             foreach (var player in _connectedPlayers)
@@ -270,9 +269,8 @@ namespace VoiceChat
 
                 foreach (var packet in packets)
                 {
-                    outMessage.Write(packet.Data.Length);
                     outMessage.Write(packet.DataSize);
-                    outMessage.Write(packet.Data);
+                    outMessage.Write(packet.Data, 0, packet.DataSize);
                 }
 
                 var positionChanged = Math.Abs(relativePosition.DistanceTo(player.Value.OldPosition)) > 0.1;

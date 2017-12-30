@@ -61,7 +61,7 @@ namespace RealityVoice
 
             _decoder = OpusDecoder.Create((int)SampleRate, 1);
             _encoder = OpusEncoder.Create((int)SampleRate, 1, Application.Voip);
-            _encoder.Bitrate = 8192 * 2;
+            _encoder.Bitrate = 20480;
             _encoder.FrameByteCount(StreamSize);
         }
 
@@ -177,9 +177,8 @@ namespace RealityVoice
 
                                         for (var i = 0; i < packetAmount; i++)
                                         {
-                                            int size = message.ReadInt32();
                                             int dataSize = message.ReadInt32();
-                                            byte[] encoded = message.ReadBytes(size);
+                                            byte[] encoded = message.ReadBytes(dataSize);
                                             byte[] decoded = _decoder.Decode(encoded, dataSize, out var len);
 
                                             packets.Add(new VoicePacket(decoded, len));
@@ -307,9 +306,8 @@ namespace RealityVoice
 
             foreach (var packet in _packets.ToList())
             {
-                message.Write(packet.Data.Length);
                 message.Write(packet.DataSize);
-                message.Write(packet.Data);
+                message.Write(packet.Data, 0, packet.DataSize);
             }
 
             _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
