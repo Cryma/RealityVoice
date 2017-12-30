@@ -5,12 +5,12 @@ namespace VoiceChat
     public struct VoicePacket
     {
 
-        public byte[] DecodedVoice;
+        public byte[] Data;
         public int DataSize;
 
-        public VoicePacket(byte[] decoded, int dataSize)
+        public VoicePacket(byte[] data, int dataSize)
         {
-            DecodedVoice = decoded;
+            Data = data;
             DataSize = dataSize;
         }
 

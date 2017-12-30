@@ -35,7 +35,6 @@ namespace RealityVoice
 
         private OpusDecoder _decoder;
         private OpusEncoder _encoder;
-        private int _bytesPerSegment;
 
         private Thread _updateThread;
 
@@ -62,8 +61,8 @@ namespace RealityVoice
 
             _decoder = OpusDecoder.Create((int)SampleRate, 1);
             _encoder = OpusEncoder.Create((int)SampleRate, 1, Application.Voip);
-            _encoder.Bitrate = 8192 * 2;
-            _bytesPerSegment = _encoder.FrameByteCount(StreamSize);
+            _encoder.Bitrate = 20480;
+            _encoder.FrameByteCount(StreamSize);
         }
 
         public void Start()
@@ -178,9 +177,8 @@ namespace RealityVoice
 
                                         for (var i = 0; i < packetAmount; i++)
                                         {
-                                            int size = message.ReadInt32();
                                             int dataSize = message.ReadInt32();
-                                            byte[] encoded = message.ReadBytes(size);
+                                            byte[] encoded = message.ReadBytes(dataSize);
                                             byte[] decoded = _decoder.Decode(encoded, dataSize, out var len);
 
                                             packets.Add(new VoicePacket(decoded, len));
@@ -208,7 +206,7 @@ namespace RealityVoice
 
                                         for (var i = 0; i < packetAmount; i++)
                                         {
-                                            player.PlayVoice(packets[i].EncodedVoice, packets[i].DataSize);
+                                            player.PlayVoice(packets[i].Data, packets[i].DataSize);
                                         }
                                     }
                                 }
@@ -226,10 +224,10 @@ namespace RealityVoice
                 }
             }
             catch (ThreadAbortException) { }
-            //catch (Exception ex)
-            //{
-            //    Debug.WriteLine($"Exception in netcode: {ex}");
-            //}
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception in netcode: {ex}");
+            }
         }
 
         public static byte[] Combine(byte[] first, byte[] second)
@@ -308,9 +306,8 @@ namespace RealityVoice
 
             foreach (var packet in _packets.ToList())
             {
-                message.Write(packet.EncodedVoice.Length);
                 message.Write(packet.DataSize);
-                message.Write(packet.EncodedVoice);
+                message.Write(packet.Data, 0, packet.DataSize);
             }
 
             _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);
