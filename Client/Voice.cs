@@ -207,7 +207,7 @@ namespace RealityVoice
 
                                         for (var i = 0; i < packetAmount; i++)
                                         {
-                                            player.PlayVoice(packets[i].EncodedVoice, packets[i].DataSize);
+                                            player.PlayVoice(packets[i].Data, packets[i].DataSize);
                                         }
                                     }
                                 }
@@ -307,9 +307,9 @@ namespace RealityVoice
 
             foreach (var packet in _packets.ToList())
             {
-                message.Write(packet.EncodedVoice.Length);
+                message.Write(packet.Data.Length);
                 message.Write(packet.DataSize);
-                message.Write(packet.EncodedVoice);
+                message.Write(packet.Data);
             }
 
             _client.SendMessage(message, NetDeliveryMethod.ReliableOrdered);

@@ -5,13 +5,13 @@ namespace RealityVoice
     public struct VoicePacket
     {
 
-        public byte[] EncodedVoice;
+        public byte[] Data;
         public int DataSize;
         public DateTime CreatedAt;
 
-        public VoicePacket(byte[] encoded, int dataSize)
+        public VoicePacket(byte[] data, int dataSize)
         {
-            EncodedVoice = encoded;
+            Data = data;
             DataSize = dataSize;
             CreatedAt = DateTime.Now;
         }

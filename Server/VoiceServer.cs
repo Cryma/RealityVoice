@@ -270,9 +270,9 @@ namespace VoiceChat
 
                 foreach (var packet in packets)
                 {
-                    outMessage.Write(packet.DecodedVoice.Length);
+                    outMessage.Write(packet.Data.Length);
                     outMessage.Write(packet.DataSize);
-                    outMessage.Write(packet.DecodedVoice);
+                    outMessage.Write(packet.Data);
                 }
 
                 var positionChanged = Math.Abs(relativePosition.DistanceTo(player.Value.OldPosition)) > 0.1;
