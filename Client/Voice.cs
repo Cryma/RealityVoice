@@ -35,7 +35,6 @@ namespace RealityVoice
 
         private OpusDecoder _decoder;
         private OpusEncoder _encoder;
-        private int _bytesPerSegment;
 
         private Thread _updateThread;
 
@@ -63,7 +62,7 @@ namespace RealityVoice
             _decoder = OpusDecoder.Create((int)SampleRate, 1);
             _encoder = OpusEncoder.Create((int)SampleRate, 1, Application.Voip);
             _encoder.Bitrate = 8192 * 2;
-            _bytesPerSegment = _encoder.FrameByteCount(StreamSize);
+            _encoder.FrameByteCount(StreamSize);
         }
 
         public void Start()
@@ -226,10 +225,10 @@ namespace RealityVoice
                 }
             }
             catch (ThreadAbortException) { }
-            //catch (Exception ex)
-            //{
-            //    Debug.WriteLine($"Exception in netcode: {ex}");
-            //}
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception in netcode: {ex}");
+            }
         }
 
         public static byte[] Combine(byte[] first, byte[] second)

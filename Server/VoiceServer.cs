@@ -136,31 +136,40 @@ namespace VoiceChat
                         {
                             if (message.MessageType == NetIncomingMessageType.ConnectionApproval)
                             {
-                                bool playerFound = false;
                                 var token = message.ReadString();
+
+                                Client foundPlayer = null;
 
                                 foreach (var player in API.shared.getAllPlayers())
                                 {
-                                    if (player.getData("voice_token") == token)
-                                    {
-                                        if (_connectedPlayers.Values.Count(p => p.Client == player) != 0)
-                                            break;
+                                    if (player.getData("voice_token") != token) continue;
 
-                                        PlayerVoiceConnected(message.SenderConnection, player);
-                                        playerFound = true;
-                                        break;
-                                    }
+                                    foundPlayer = player;
+                                    break;
                                 }
 
-                                if (!playerFound)
+                                // Check if there is a player on the server with the provided token
+                                if (foundPlayer == null)
                                 {
                                     API.shared.consoleOutput(LogCat.Warn, "Player tried to join with an invalid token");
                                     message.SenderConnection.Deny("invalid token provided");
+                                    continue;
                                 }
+
+                                // Check if the player is already connected with voice
+                                if (foundPlayer.hasData("voice_connection") &&
+                                    foundPlayer.getData("voice_connection") != null)
+                                {
+                                    API.shared.consoleOutput(LogCat.Warn, "Player tried to join while already being connected");
+                                    message.SenderConnection.Deny("already connected");
+                                    continue;
+                                }
+
+                                PlayerVoiceConnected(message.SenderConnection, foundPlayer);
                             }
                             else if (message.MessageType == NetIncomingMessageType.StatusChanged)
                             {
-                                var status = (NetConnectionStatus)message.ReadByte();
+                                var status = (NetConnectionStatus) message.ReadByte();
 #if DEBUG
                                 API.shared.consoleOutput(LogCat.Debug, "Voice player status changed");
 #endif
@@ -173,15 +182,18 @@ namespace VoiceChat
                                 if (type == 0x01)
                                     BroadcastVoiceData(message);
                             }
-                            _server.Recycle(message);
                         }
-                        catch(IndexOutOfRangeException ex)
+                        catch (IndexOutOfRangeException ex)
                         {
                             API.shared.consoleOutput(LogCat.Error, $"Error decoding data: {ex}");
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             API.shared.consoleOutput(LogCat.Error, $"Error reading network data: {ex}");
+                        }
+                        finally
+                        {
+                            _server.Recycle(message);
                         }
                     }
                 }
@@ -395,7 +407,7 @@ namespace VoiceChat
                     if (_serverThread.IsAlive)
                         _serverThread.Abort();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     API.shared.consoleOutput(LogCat.Error, "Error while trying to stop server");
                 }
