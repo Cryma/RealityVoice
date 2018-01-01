@@ -255,9 +255,9 @@ namespace VoiceChat
                 var client = player.Value.Client;
 
                 if (client.name == sender.Client.name) continue;
-                if (client.position.DistanceTo(sender.Client.position) > 20) continue;
+                if (client.position.DistanceTo(sender.Client.getData(message.SenderConnection.RemoteUniqueIdentifier.ToString())) > 20) continue;
 
-                var relativePosition = sender.Client.position - player.Value.Client.position;
+                var relativePosition = player.Value.Client.position - sender.Client.getData(message.SenderConnection.RemoteUniqueIdentifier.ToString());
                 var cameraPosition = player.Value.Client.hasData("campos") ? (Vector3)player.Value.Client.getData("campos") : new Vector3();
 
                 var outMessage = _server.CreateMessage();
