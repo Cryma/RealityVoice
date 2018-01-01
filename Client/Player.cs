@@ -19,7 +19,7 @@ namespace RealityVoice
 
         public void UpdatePosition(Vector3 position)
         {
-            Playback.Listener.Position = position;
+            Playback.ALPosition = position;
         }
 
         public void UpdateOrientation(Vector3 orientation)
@@ -29,7 +29,7 @@ namespace RealityVoice
 
         public void PlayVoice(byte[] data, int count)
         {
-            if(Playback.CanWrite)
+            if (Playback.CanWrite)
                 Playback.Write(data, 0, count);
         }
 
